@@ -3,6 +3,5 @@ import {Point} from "../model/point";
 
 export class InteractiveComponent implements Component {
   area: [Point];
-  click: boolean;
-  mousedown: boolean;
+  clicked: boolean;
 }

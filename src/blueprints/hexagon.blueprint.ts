@@ -34,7 +34,7 @@ export class HexagonBlueprint implements Blueprint {
       component: InteractiveComponent,
       value: <InteractiveComponent>{
         area: new Array<Point>(),
-        click: false
+        clicked: false
       }
     }
   ];

@@ -1,6 +1,5 @@
-import { Engine, Family, FamilyBuilder, System } from "@mesa-engine/core";
-import { InteractiveComponent, PositionComponent, RenderComponent, SizeComponent, TextComponent, AnswerComponent } from "../components";
-import { Point } from "../model/point";
+import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
+import {InteractiveComponent, PositionComponent, RenderComponent, TextComponent} from "../components";
 
 export class RenderSystem extends System {
   family: Family;
@@ -32,41 +31,24 @@ export class RenderSystem extends System {
       this.ctx.fillStyle = render.color;
       this.ctx.globalAlpha = render.opacity;
 
-      if (entity.hasComponent(SizeComponent)) {
-        const size = entity.getComponent(SizeComponent);
+      if (entity.hasComponent(InteractiveComponent)) {
+        const interactiveComponent = entity.getComponent(InteractiveComponent);
         this.ctx.beginPath();
-        for (let i = 0; i < 7; i++) {
-          const x = position.x + size.value * Math.cos(i * (Math.PI / 3));
-          const y = position.y + size.value * Math.sin(i * (Math.PI / 3));
-          this.ctx.lineTo(x, y);
-          if (entity.hasComponent(InteractiveComponent)) {
-            const click = entity.getComponent(InteractiveComponent);
-            click.area.push(new Point(x, y));
-          }
-        }
-
-        this.ctx.fillStyle = render.color;
-        if (entity.hasComponent(InteractiveComponent)) {
-          const click = entity.getComponent(InteractiveComponent);
-          if (click.mousedown) {
-            this.ctx.fillStyle = 'red';
-          }
+        for (let point of interactiveComponent.area) {
+          this.ctx.lineTo(point.x, point.y);
         }
         this.ctx.closePath();
+        this.ctx.fillStyle = render.color;
         this.ctx.fill();
       }
+
       if (entity.hasComponent(TextComponent)) {
         const text = entity.getComponent(TextComponent);
         this.ctx.font = text.font;
         this.ctx.fillStyle = text.color;
         this.ctx.textAlign = text.align;
         this.ctx.textBaseline = text.baseLine;
-        if (entity.hasComponent(AnswerComponent)) {
-          const answer = entity.getComponent(AnswerComponent);
-          this.ctx.fillText(answer.answer, position.x, position.y);
-        } else {
-          this.ctx.fillText(text.text, position.x, position.y);
-        }
+        this.ctx.fillText(text.text, position.x, position.y);
       }
     }
   }

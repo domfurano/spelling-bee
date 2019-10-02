@@ -1,74 +1,47 @@
-import { Engine, Family, FamilyBuilder, System } from "@mesa-engine/core";
-import { InteractiveComponent, AnswerComponent, TextComponent } from "../components";
-import { Point } from "../model/point";
+import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
+import {InteractiveComponent, TextComponent} from "../components";
+import {Point} from "../model/point";
 
-export class InteractionHandlerSystem extends System {
+export class InteractionListenerSystem extends System {
   private interactionFamily: Family;
-  private answerFamily: Family;
   private clicks: Array<Point>;
-  private mouseDowns: Array<Point>;
-  private mouseUp: boolean;
   private answer: string;
 
 
   constructor() {
     super();
     this.clicks = [];
-    this.mouseDowns = [];
-    this.mouseUp = false;
   }
 
   onAttach(engine: Engine) {
     super.onAttach(engine);
     this.interactionFamily = new FamilyBuilder(engine).include(InteractiveComponent).build();
-    this.answerFamily = new FamilyBuilder(engine).include(AnswerComponent).build();
     let canvas = document.getElementById('canvas');
     if (canvas) {
       canvas.addEventListener('click', event => {
         this.clicks.push(new Point(event.clientX, event.clientY));
       });
-      canvas.addEventListener('mousedown', event => {
-        this.mouseDowns.push(new Point(event.clientX, event.clientY));
-        this.mouseUp = false;
-      });
-      canvas.addEventListener('mouseup', event => {
-        this.mouseUp = true;
-      });
     }
   }
 
   update(engine: Engine, delta: number): void {
-
     for (const entity of this.interactionFamily.entities) {
       if (entity.hasComponent(InteractiveComponent)) {
         for (const click of this.clicks) {
           const interactiveComponent = entity.getComponent(InteractiveComponent);
-          const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, click);
+          const inside: boolean = InteractionListenerSystem.insidePolygon(interactiveComponent.area, 6, click);
           if (inside) {
-            interactiveComponent.click = true;
+            interactiveComponent.clicked = true;
             if (entity.hasComponent(TextComponent)) {
               const textComponent = entity.getComponent(TextComponent);
               this.answer += textComponent.text;
+              console.debug(textComponent.text);
             }
           }
         }
-        for (const mouseDown of this.mouseDowns) {
-          const interactiveComponent = entity.getComponent(InteractiveComponent);
-          const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, mouseDown);
-          if (inside && !this.mouseUp) {
-            interactiveComponent.mousedown = true;
-          }
-        }
-      }
-    }
-    for(const entity of this.answerFamily.entities) {
-      if (entity.hasComponent(AnswerComponent)) {
-        const answerComponent = entity.getComponent(AnswerComponent);
-        answerComponent.answer = this.answer;
       }
     }
     this.clicks = [];
-    this.mouseDowns = [];
   }
 
   // http://www.eecs.umich.edu/courses/eecs380/HANDOUTS/PROJ2/InsidePoly.html

@@ -762,10 +762,7 @@ var CandidateAnswerBlueprint = function () {
         color: 'black'
       }
     }, {
-      component: components_1.AnswerComponent,
-      value: {
-        answer: ''
-      }
+      component: components_1.AnswerComponent
     }];
   }
 
@@ -811,7 +808,7 @@ var HexagonBlueprint = function () {
       component: components_1.InteractiveComponent,
       value: {
         area: new Array(),
-        click: false
+        clicked: false
       }
     }];
   }
@@ -838,7 +835,43 @@ __export(require("./renderable.blueprint"));
 __export(require("./candidateAnswerBlueprint"));
 
 __export(require("./hexagon.blueprint"));
-},{"./renderable.blueprint":"blueprints/renderable.blueprint.ts","./candidateAnswerBlueprint":"blueprints/candidateAnswerBlueprint.ts","./hexagon.blueprint":"blueprints/hexagon.blueprint.ts"}],"systems/scene-creator.system.ts":[function(require,module,exports) {
+},{"./renderable.blueprint":"blueprints/renderable.blueprint.ts","./candidateAnswerBlueprint":"blueprints/candidateAnswerBlueprint.ts","./hexagon.blueprint":"blueprints/hexagon.blueprint.ts"}],"model/point.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var Point = function () {
+  function Point(x, y) {
+    this._x = x;
+    this._y = y;
+  }
+
+  Object.defineProperty(Point.prototype, "x", {
+    get: function get() {
+      return this._x;
+    },
+    enumerable: true,
+    configurable: true
+  });
+  Object.defineProperty(Point.prototype, "y", {
+    get: function get() {
+      return this._y;
+    },
+    enumerable: true,
+    configurable: true
+  });
+
+  Point.prototype.toString = function () {
+    return '{ ' + this.x + ', ' + this.y + ' }';
+  };
+
+  return Point;
+}();
+
+exports.Point = Point;
+},{}],"systems/scene-creator.system.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -876,6 +909,8 @@ var core_1 = require("@mesa-engine/core");
 var blueprints_1 = require("../blueprints");
 
 var components_1 = require("../components");
+
+var point_1 = require("../model/point");
 
 var SceneCreatorSystem = function (_super) {
   __extends(SceneCreatorSystem, _super);
@@ -915,9 +950,12 @@ var SceneCreatorSystem = function (_super) {
     var hexagaon = engine.buildEntity(blueprints_1.HexagonBlueprint);
     var positionComponent = hexagaon.getComponent(components_1.PositionComponent);
     var renderComponent = hexagaon.getComponent(components_1.RenderComponent);
+    var interactiveComponent = hexagaon.getComponent(components_1.InteractiveComponent);
+    var sizeComponent = hexagaon.getComponent(components_1.SizeComponent);
     renderComponent.color = '#f8cd05';
     positionComponent.x = xOrigin;
     positionComponent.y = yOrigin;
+    SceneCreatorSystem.createHexagonArea(positionComponent, sizeComponent, interactiveComponent);
     engine.addEntity(hexagaon);
     this.entities.push(hexagaon);
     var distance = 100;
@@ -925,11 +963,22 @@ var SceneCreatorSystem = function (_super) {
     for (var i = 0; i < 6; i++) {
       var hexagaon_1 = engine.buildEntity(blueprints_1.HexagonBlueprint);
       var positionComponent_1 = hexagaon_1.getComponent(components_1.PositionComponent);
+      var sizeComponent_1 = hexagaon_1.getComponent(components_1.SizeComponent);
+      var interactiveComponent_1 = hexagaon_1.getComponent(components_1.InteractiveComponent);
       var angle = i * (Math.PI / 3) + Math.PI / 2;
       positionComponent_1.x = xOrigin + distance * Math.cos(angle);
       positionComponent_1.y = yOrigin + distance * Math.sin(angle);
+      SceneCreatorSystem.createHexagonArea(positionComponent_1, sizeComponent_1, interactiveComponent_1);
       engine.addEntity(hexagaon_1);
       this.entities.push(hexagaon_1);
+    }
+  };
+
+  SceneCreatorSystem.createHexagonArea = function (positionComponent, sizeComponent, interactiveComponent) {
+    for (var i = 0; i < 7; i++) {
+      var x = positionComponent.x + sizeComponent.value * Math.cos(i * (Math.PI / 3));
+      var y = positionComponent.y + sizeComponent.value * Math.sin(i * (Math.PI / 3));
+      interactiveComponent.area.push(new point_1.Point(x, y));
     }
   };
 
@@ -946,7 +995,7 @@ var SceneCreatorSystem = function (_super) {
 }(core_1.System);
 
 exports.SceneCreatorSystem = SceneCreatorSystem;
-},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../blueprints":"blueprints/index.ts","../components":"components/index.ts"}],"systems/text-generation.system.ts":[function(require,module,exports) {
+},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../blueprints":"blueprints/index.ts","../components":"components/index.ts","../model/point":"model/point.ts"}],"systems/text-generation.system.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -1029,43 +1078,7 @@ var TextGenerationSystem = function (_super) {
 }(core_1.System);
 
 exports.TextGenerationSystem = TextGenerationSystem;
-},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts"}],"model/point.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var Point = function () {
-  function Point(x, y) {
-    this._x = x;
-    this._y = y;
-  }
-
-  Object.defineProperty(Point.prototype, "x", {
-    get: function get() {
-      return this._x;
-    },
-    enumerable: true,
-    configurable: true
-  });
-  Object.defineProperty(Point.prototype, "y", {
-    get: function get() {
-      return this._y;
-    },
-    enumerable: true,
-    configurable: true
-  });
-
-  Point.prototype.toString = function () {
-    return '{ ' + this.x + ', ' + this.y + ' }';
-  };
-
-  return Point;
-}();
-
-exports.Point = Point;
-},{}],"systems/interactionHandler.system.ts":[function(require,module,exports) {
+},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts"}],"systems/interactionListenerSystem.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -1104,43 +1117,32 @@ var components_1 = require("../components");
 
 var point_1 = require("../model/point");
 
-var InteractionHandlerSystem = function (_super) {
-  __extends(InteractionHandlerSystem, _super);
+var InteractionListenerSystem = function (_super) {
+  __extends(InteractionListenerSystem, _super);
 
-  function InteractionHandlerSystem() {
+  function InteractionListenerSystem() {
     var _this = _super.call(this) || this;
 
     _this.clicks = [];
-    _this.mouseDowns = [];
-    _this.mouseUp = false;
     return _this;
   }
 
-  InteractionHandlerSystem.prototype.onAttach = function (engine) {
+  InteractionListenerSystem.prototype.onAttach = function (engine) {
     var _this = this;
 
     _super.prototype.onAttach.call(this, engine);
 
     this.interactionFamily = new core_1.FamilyBuilder(engine).include(components_1.InteractiveComponent).build();
-    this.answerFamily = new core_1.FamilyBuilder(engine).include(components_1.AnswerComponent).build();
     var canvas = document.getElementById('canvas');
 
     if (canvas) {
       canvas.addEventListener('click', function (event) {
         _this.clicks.push(new point_1.Point(event.clientX, event.clientY));
       });
-      canvas.addEventListener('mousedown', function (event) {
-        _this.mouseDowns.push(new point_1.Point(event.clientX, event.clientY));
-
-        _this.mouseUp = false;
-      });
-      canvas.addEventListener('mouseup', function (event) {
-        _this.mouseUp = true;
-      });
     }
   };
 
-  InteractionHandlerSystem.prototype.update = function (engine, delta) {
+  InteractionListenerSystem.prototype.update = function (engine, delta) {
     for (var _i = 0, _a = this.interactionFamily.entities; _i < _a.length; _i++) {
       var entity = _a[_i];
 
@@ -1148,44 +1150,25 @@ var InteractionHandlerSystem = function (_super) {
         for (var _b = 0, _c = this.clicks; _b < _c.length; _b++) {
           var click = _c[_b];
           var interactiveComponent = entity.getComponent(components_1.InteractiveComponent);
-          var inside = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, click);
+          var inside = InteractionListenerSystem.insidePolygon(interactiveComponent.area, 6, click);
 
           if (inside) {
-            interactiveComponent.click = true;
+            interactiveComponent.clicked = true;
 
             if (entity.hasComponent(components_1.TextComponent)) {
               var textComponent = entity.getComponent(components_1.TextComponent);
               this.answer += textComponent.text;
+              console.debug(textComponent.text);
             }
           }
         }
-
-        for (var _d = 0, _e = this.mouseDowns; _d < _e.length; _d++) {
-          var mouseDown = _e[_d];
-          var interactiveComponent = entity.getComponent(components_1.InteractiveComponent);
-          var inside = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, mouseDown);
-
-          if (inside && !this.mouseUp) {
-            interactiveComponent.mousedown = true;
-          }
-        }
-      }
-    }
-
-    for (var _f = 0, _g = this.answerFamily.entities; _f < _g.length; _f++) {
-      var entity = _g[_f];
-
-      if (entity.hasComponent(components_1.AnswerComponent)) {
-        var answerComponent = entity.getComponent(components_1.AnswerComponent);
-        answerComponent.answer = this.answer;
       }
     }
 
     this.clicks = [];
-    this.mouseDowns = [];
   };
 
-  InteractionHandlerSystem.insidePolygon = function (points, N, p) {
+  InteractionListenerSystem.insidePolygon = function (points, N, p) {
     var counter = 0;
     var i;
     var xInters;
@@ -1216,11 +1199,11 @@ var InteractionHandlerSystem = function (_super) {
     return counter % 2 != 0;
   };
 
-  return InteractionHandlerSystem;
+  return InteractionListenerSystem;
 }(core_1.System);
 
-exports.InteractionHandlerSystem = InteractionHandlerSystem;
-},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts","../model/point":"model/point.ts"}],"systems/render.system.ts":[function(require,module,exports) {
+exports.InteractionListenerSystem = InteractionListenerSystem;
+},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts","../model/point":"model/point.ts"}],"systems/interactionHandlerSystem.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -1257,7 +1240,81 @@ var core_1 = require("@mesa-engine/core");
 
 var components_1 = require("../components");
 
-var point_1 = require("../model/point");
+var InteractionHandlerSystem = function (_super) {
+  __extends(InteractionHandlerSystem, _super);
+
+  function InteractionHandlerSystem() {
+    var _this = _super.call(this) || this;
+
+    _this.clicks = [];
+    return _this;
+  }
+
+  InteractionHandlerSystem.prototype.onAttach = function (engine) {
+    _super.prototype.onAttach.call(this, engine);
+
+    this.interactionFamily = new core_1.FamilyBuilder(engine).include(components_1.InteractiveComponent).build();
+    this.answerFamily = new core_1.FamilyBuilder(engine).include(components_1.AnswerComponent).build();
+  };
+
+  InteractionHandlerSystem.prototype.update = function (engine, delta) {
+    for (var _i = 0, _a = this.interactionFamily.entities; _i < _a.length; _i++) {
+      var interactionEntity = _a[_i];
+
+      for (var _b = 0, _c = this.answerFamily.entities; _b < _c.length; _b++) {
+        var answerEntity = _c[_b];
+        var interactiveComponent = interactionEntity.getComponent(components_1.InteractiveComponent);
+
+        if (interactiveComponent.clicked) {
+          interactiveComponent.clicked = false;
+          var interactionEntityTextComponent = interactionEntity.getComponent(components_1.TextComponent);
+          var answerEntityTextComponent = answerEntity.getComponent(components_1.TextComponent);
+          answerEntityTextComponent.text = interactionEntityTextComponent.text;
+        }
+      }
+    }
+  };
+
+  return InteractionHandlerSystem;
+}(core_1.System);
+
+exports.InteractionHandlerSystem = InteractionHandlerSystem;
+},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts"}],"systems/render.system.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var core_1 = require("@mesa-engine/core");
+
+var components_1 = require("../components");
 
 var RenderSystem = function (_super) {
   __extends(RenderSystem, _super);
@@ -1293,32 +1350,17 @@ var RenderSystem = function (_super) {
       this.ctx.fillStyle = render.color;
       this.ctx.globalAlpha = render.opacity;
 
-      if (entity.hasComponent(components_1.SizeComponent)) {
-        var size = entity.getComponent(components_1.SizeComponent);
+      if (entity.hasComponent(components_1.InteractiveComponent)) {
+        var interactiveComponent = entity.getComponent(components_1.InteractiveComponent);
         this.ctx.beginPath();
 
-        for (var i = 0; i < 7; i++) {
-          var x = position.x + size.value * Math.cos(i * (Math.PI / 3));
-          var y = position.y + size.value * Math.sin(i * (Math.PI / 3));
-          this.ctx.lineTo(x, y);
-
-          if (entity.hasComponent(components_1.InteractiveComponent)) {
-            var click = entity.getComponent(components_1.InteractiveComponent);
-            click.area.push(new point_1.Point(x, y));
-          }
-        }
-
-        this.ctx.fillStyle = render.color;
-
-        if (entity.hasComponent(components_1.InteractiveComponent)) {
-          var click = entity.getComponent(components_1.InteractiveComponent);
-
-          if (click.mousedown) {
-            this.ctx.fillStyle = 'red';
-          }
+        for (var _b = 0, _c = interactiveComponent.area; _b < _c.length; _b++) {
+          var point = _c[_b];
+          this.ctx.lineTo(point.x, point.y);
         }
 
         this.ctx.closePath();
+        this.ctx.fillStyle = render.color;
         this.ctx.fill();
       }
 
@@ -1328,13 +1370,7 @@ var RenderSystem = function (_super) {
         this.ctx.fillStyle = text.color;
         this.ctx.textAlign = text.align;
         this.ctx.textBaseline = text.baseLine;
-
-        if (entity.hasComponent(components_1.AnswerComponent)) {
-          var answer = entity.getComponent(components_1.AnswerComponent);
-          this.ctx.fillText(answer.answer, position.x, position.y);
-        } else {
-          this.ctx.fillText(text.text, position.x, position.y);
-        }
+        this.ctx.fillText(text.text, position.x, position.y);
       }
     }
   };
@@ -1343,7 +1379,7 @@ var RenderSystem = function (_super) {
 }(core_1.System);
 
 exports.RenderSystem = RenderSystem;
-},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts","../model/point":"model/point.ts"}],"systems/index.ts":[function(require,module,exports) {
+},{"@mesa-engine/core":"../node_modules/@mesa-engine/core/index.js","../components":"components/index.ts"}],"systems/index.ts":[function(require,module,exports) {
 "use strict";
 
 function __export(m) {
@@ -1360,10 +1396,12 @@ __export(require("./scene-creator.system"));
 
 __export(require("./text-generation.system"));
 
-__export(require("./interactionHandler.system"));
+__export(require("./interactionListenerSystem"));
+
+__export(require("./interactionHandlerSystem"));
 
 __export(require("./render.system"));
-},{"./scene-creator.system":"systems/scene-creator.system.ts","./text-generation.system":"systems/text-generation.system.ts","./interactionHandler.system":"systems/interactionHandler.system.ts","./render.system":"systems/render.system.ts"}],"index.ts":[function(require,module,exports) {
+},{"./scene-creator.system":"systems/scene-creator.system.ts","./text-generation.system":"systems/text-generation.system.ts","./interactionListenerSystem":"systems/interactionListenerSystem.ts","./interactionHandlerSystem":"systems/interactionHandlerSystem.ts","./render.system":"systems/render.system.ts"}],"index.ts":[function(require,module,exports) {
 "use strict";
 
 var __importStar = this && this.__importStar || function (mod) {
@@ -1438,7 +1476,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63458" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63423" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

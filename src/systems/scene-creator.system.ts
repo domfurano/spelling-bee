@@ -1,7 +1,7 @@
-import { Engine, Entity, System } from "@mesa-engine/core";
-import { CandidateAnswerBlueprint, HexagonBlueprint } from "../blueprints";
-import { PositionComponent, RenderComponent, TextComponent, AnswerComponent } from "../components";
-import Test = Mocha.Test;
+import {Engine, Entity, System} from "@mesa-engine/core";
+import {CandidateAnswerBlueprint, HexagonBlueprint} from "../blueprints";
+import {InteractiveComponent, PositionComponent, RenderComponent, SizeComponent} from "../components";
+import {Point} from "../model/point";
 
 export class SceneCreatorSystem extends System {
 
@@ -30,20 +30,34 @@ export class SceneCreatorSystem extends System {
     const hexagaon: Entity = engine.buildEntity(HexagonBlueprint);
     const positionComponent = hexagaon.getComponent(PositionComponent);
     const renderComponent = hexagaon.getComponent(RenderComponent);
+    const interactiveComponent = hexagaon.getComponent(InteractiveComponent);
+    const sizeComponent = hexagaon.getComponent(SizeComponent);
     renderComponent.color = '#f8cd05';
     positionComponent.x = xOrigin;
     positionComponent.y = yOrigin;
+    SceneCreatorSystem.createHexagonArea(positionComponent, sizeComponent, interactiveComponent);
     engine.addEntity(hexagaon);
     this.entities.push(hexagaon);
     let distance = 100;
     for (let i = 0; i < 6; i++) {
       const hexagaon: Entity = engine.buildEntity(HexagonBlueprint);
       const positionComponent = hexagaon.getComponent(PositionComponent);
+      const sizeComponent = hexagaon.getComponent(SizeComponent);
+      const interactiveComponent = hexagaon.getComponent(InteractiveComponent);
       let angle = i * (Math.PI / 3) + Math.PI / 2;
       positionComponent.x = xOrigin + distance * Math.cos(angle);
       positionComponent.y = yOrigin + distance * Math.sin(angle);
+      SceneCreatorSystem.createHexagonArea(positionComponent, sizeComponent, interactiveComponent);
       engine.addEntity(hexagaon);
       this.entities.push(hexagaon);
+    }
+  }
+
+  private static createHexagonArea(positionComponent, sizeComponent, interactiveComponent) {
+    for (let i = 0; i < 7; i++) {
+      const x = positionComponent.x + sizeComponent.value * Math.cos(i * (Math.PI / 3));
+      const y = positionComponent.y + sizeComponent.value * Math.sin(i * (Math.PI / 3));
+      interactiveComponent.area.push(new Point(x, y));
     }
   }
 
