@@ -3,3 +3,4 @@ export * from './text.component';
 export * from './position.component';
 export * from './size.component';
 export * from './interactiveComponent';
+export * from './answer.component';

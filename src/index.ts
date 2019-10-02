@@ -12,10 +12,10 @@ export class App {
   }
 
   loop(timestamp) {
-    window.requestAnimationFrame(this.loop.bind(this));
     var progress = timestamp - this.lastRender;
     this.engine.update(progress);
     this.lastRender = timestamp;
+    window.requestAnimationFrame(this.loop.bind(this));
   }
 }
 

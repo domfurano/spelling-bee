@@ -1,12 +1,14 @@
-import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {InteractiveComponent} from "../components";
-import {Point} from "../model/point";
+import { Engine, Family, FamilyBuilder, System } from "@mesa-engine/core";
+import { InteractiveComponent, AnswerComponent, TextComponent } from "../components";
+import { Point } from "../model/point";
 
 export class InteractionHandlerSystem extends System {
-  private family: Family;
+  private interactionFamily: Family;
+  private answerFamily: Family;
   private clicks: Array<Point>;
   private mouseDowns: Array<Point>;
   private mouseUp: boolean;
+  private answer: string;
 
 
   constructor() {
@@ -18,7 +20,8 @@ export class InteractionHandlerSystem extends System {
 
   onAttach(engine: Engine) {
     super.onAttach(engine);
-    this.family = new FamilyBuilder(engine).include(InteractiveComponent).build();
+    this.interactionFamily = new FamilyBuilder(engine).include(InteractiveComponent).build();
+    this.answerFamily = new FamilyBuilder(engine).include(AnswerComponent).build();
     let canvas = document.getElementById('canvas');
     if (canvas) {
       canvas.addEventListener('click', event => {
@@ -35,22 +38,33 @@ export class InteractionHandlerSystem extends System {
   }
 
   update(engine: Engine, delta: number): void {
-    for (const entity of this.family.entities) {
-      for (const click of this.clicks) {
-        const interactiveComponent = entity.getComponent(InteractiveComponent);
-        const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, click);
-        if (inside) {
-          interactiveComponent.click = true;
+
+    for (const entity of this.interactionFamily.entities) {
+      if (entity.hasComponent(InteractiveComponent)) {
+        for (const click of this.clicks) {
+          const interactiveComponent = entity.getComponent(InteractiveComponent);
+          const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, click);
+          if (inside) {
+            interactiveComponent.click = true;
+            if (entity.hasComponent(TextComponent)) {
+              const textComponent = entity.getComponent(TextComponent);
+              this.answer += textComponent.text;
+            }
+          }
+        }
+        for (const mouseDown of this.mouseDowns) {
+          const interactiveComponent = entity.getComponent(InteractiveComponent);
+          const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, mouseDown);
+          if (inside && !this.mouseUp) {
+            interactiveComponent.mousedown = true;
+          }
         }
       }
-      for (const mouseDown of this.mouseDowns) {
-        const interactiveComponent = entity.getComponent(InteractiveComponent);
-        const inside: boolean = InteractionHandlerSystem.insidePolygon(interactiveComponent.area, 6, mouseDown);
-        if (inside && !this.mouseUp) {
-          interactiveComponent.mousedown = true;
-        } else {
-          interactiveComponent.mousedown = false;
-        }
+    }
+    for(const entity of this.answerFamily.entities) {
+      if (entity.hasComponent(AnswerComponent)) {
+        const answerComponent = entity.getComponent(AnswerComponent);
+        answerComponent.answer = this.answer;
       }
     }
     this.clicks = [];
@@ -68,9 +82,9 @@ export class InteractionHandlerSystem extends System {
     p1 = points[0];
     for (i = 1; i <= N; i++) {
       p2 = points[i % N];
-      if (p.y > InteractionHandlerSystem.min(p1.y, p2.y)) {
-        if (p.y <= InteractionHandlerSystem.max(p1.y, p2.y)) {
-          if (p.x <= InteractionHandlerSystem.max(p1.x, p2.x)) {
+      if (p.y > Math.min(p1.y, p2.y)) {
+        if (p.y <= Math.max(p1.y, p2.y)) {
+          if (p.x <= Math.max(p1.x, p2.x)) {
             if (p1.y != p2.y) {
               xInters = (p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
               if (p1.x == p2.x || p.x <= xInters) {
@@ -84,8 +98,4 @@ export class InteractionHandlerSystem extends System {
     }
     return counter % 2 != 0;
   }
-
-  private static min = (x, y) => x < y ? x : y;
-
-  private static max = (x, y) => x > y ? x : y;
 }

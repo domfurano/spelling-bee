@@ -1,6 +1,6 @@
 import {Blueprint} from '@mesa-engine/core';
 import {RenderableBlueprint} from './renderable.blueprint';
-import {TextComponent} from '../components';
+import {TextComponent, AnswerComponent} from '../components';
 
 export class CandidateAnswerBlueprint implements Blueprint {
   blueprints = [new RenderableBlueprint];
@@ -8,9 +8,14 @@ export class CandidateAnswerBlueprint implements Blueprint {
     {
       component: TextComponent,
       value: <TextComponent>{
-        text: '~',
         font: '52px sans-serif',
         color: 'black'
+      }
+    },
+    {
+      component: AnswerComponent,
+      value: <AnswerComponent>{
+        answer: ''
       }
     }
   ];

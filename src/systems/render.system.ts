@@ -1,6 +1,6 @@
-import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {InteractiveComponent, PositionComponent, RenderComponent, SizeComponent, TextComponent} from "../components";
-import {Point} from "../model/point";
+import { Engine, Family, FamilyBuilder, System } from "@mesa-engine/core";
+import { InteractiveComponent, PositionComponent, RenderComponent, SizeComponent, TextComponent, AnswerComponent } from "../components";
+import { Point } from "../model/point";
 
 export class RenderSystem extends System {
   family: Family;
@@ -9,12 +9,13 @@ export class RenderSystem extends System {
 
   constructor() {
     super();
-    this.canvas = document.createElement('canvas');
-    this.canvas.id = 'canvas';
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    document.body.appendChild(this.canvas);
-    this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
+    this.canvas = document.getElementById('canvas');
+    if (this.canvas) {
+      this.canvas.id = 'canvas';
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
+    }
   }
 
   onAttach(engine: Engine) {
@@ -60,7 +61,12 @@ export class RenderSystem extends System {
         this.ctx.fillStyle = text.color;
         this.ctx.textAlign = text.align;
         this.ctx.textBaseline = text.baseLine;
-        this.ctx.fillText(text.text, position.x, position.y);
+        if (entity.hasComponent(AnswerComponent)) {
+          const answer = entity.getComponent(AnswerComponent);
+          this.ctx.fillText(answer.answer, position.x, position.y);
+        } else {
+          this.ctx.fillText(text.text, position.x, position.y);
+        }
       }
     }
   }
