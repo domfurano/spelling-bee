@@ -1,6 +1,6 @@
 import {Blueprint} from '@mesa-engine/core';
 import {RenderableBlueprint} from './renderable.blueprint';
-import {InteractiveComponent, RenderComponent, SizeComponent, TextComponent} from '../components';
+import {InputComponent, InteractiveComponent, RenderComponent, SizeComponent, TextComponent} from '../components';
 import {Point} from '../model/point';
 
 export class HexagonBlueprint implements Blueprint {
@@ -36,6 +36,9 @@ export class HexagonBlueprint implements Blueprint {
         area: new Array<Point>(),
         clicked: false
       }
+    },
+    {
+      component: InputComponent
     }
   ];
 }

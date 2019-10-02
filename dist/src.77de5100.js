@@ -630,7 +630,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var TextComponent = function () {
-  function TextComponent() {}
+  function TextComponent() {
+    this.text = '';
+  }
 
   return TextComponent;
 }();
@@ -695,6 +697,34 @@ var AnswerComponent = function () {
 }();
 
 exports.AnswerComponent = AnswerComponent;
+},{}],"components/input.component.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var InputComponent = function () {
+  function InputComponent() {}
+
+  return InputComponent;
+}();
+
+exports.InputComponent = InputComponent;
+},{}],"components/button.component.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var ButtonComponent = function () {
+  function ButtonComponent() {}
+
+  return ButtonComponent;
+}();
+
+exports.ButtonComponent = ButtonComponent;
 },{}],"components/index.ts":[function(require,module,exports) {
 "use strict";
 
@@ -719,7 +749,11 @@ __export(require("./size.component"));
 __export(require("./interactiveComponent"));
 
 __export(require("./answer.component"));
-},{"./render.component":"components/render.component.ts","./text.component":"components/text.component.ts","./position.component":"components/position.component.ts","./size.component":"components/size.component.ts","./interactiveComponent":"components/interactiveComponent.ts","./answer.component":"components/answer.component.ts"}],"blueprints/renderable.blueprint.ts":[function(require,module,exports) {
+
+__export(require("./input.component"));
+
+__export(require("./button.component"));
+},{"./render.component":"components/render.component.ts","./text.component":"components/text.component.ts","./position.component":"components/position.component.ts","./size.component":"components/size.component.ts","./interactiveComponent":"components/interactiveComponent.ts","./answer.component":"components/answer.component.ts","./input.component":"components/input.component.ts","./button.component":"components/button.component.ts"}],"blueprints/renderable.blueprint.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -810,6 +844,8 @@ var HexagonBlueprint = function () {
         area: new Array(),
         clicked: false
       }
+    }, {
+      component: components_1.InputComponent
     }];
   }
 
@@ -1039,7 +1075,7 @@ var TextGenerationSystem = function (_super) {
     var _this = _super.call(this) || this;
 
     _this.word = TextGenerationSystem.shuffleWord('ALCOVES');
-    _this.canvas = document.getElementsByTagName('canvas')[0];
+    _this.canvas = document.getElementById('canvas');
     _this.ctx = _this.canvas.getContext('2d');
     return _this;
   }
@@ -1047,12 +1083,10 @@ var TextGenerationSystem = function (_super) {
   TextGenerationSystem.prototype.onAttach = function (engine) {
     _super.prototype.onAttach.call(this, engine);
 
-    this.family = new core_1.FamilyBuilder(engine).include(components_1.TextComponent, components_1.PositionComponent).build();
-  };
+    this.inputFamily = new core_1.FamilyBuilder(engine).include(components_1.InputComponent).build();
 
-  TextGenerationSystem.prototype.update = function (engine, delta) {
-    for (var i = 0; i < this.family.entities.length; i++) {
-      var entity = this.family.entities[i];
+    for (var i = 0; i < this.inputFamily.entities.length; i++) {
+      var entity = this.inputFamily.entities[i];
 
       if (entity.hasComponent(components_1.TextComponent)) {
         var text = entity.getComponent(components_1.TextComponent);
@@ -1060,6 +1094,8 @@ var TextGenerationSystem = function (_super) {
       }
     }
   };
+
+  TextGenerationSystem.prototype.update = function (engine, delta) {};
 
   TextGenerationSystem.shuffleWord = function (word) {
     var array = word.split('');
@@ -1269,7 +1305,7 @@ var InteractionHandlerSystem = function (_super) {
           interactiveComponent.clicked = false;
           var interactionEntityTextComponent = interactionEntity.getComponent(components_1.TextComponent);
           var answerEntityTextComponent = answerEntity.getComponent(components_1.TextComponent);
-          answerEntityTextComponent.text = interactionEntityTextComponent.text;
+          answerEntityTextComponent.text += interactionEntityTextComponent.text;
         }
       }
     }

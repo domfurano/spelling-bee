@@ -28,7 +28,7 @@ export class InteractionHandlerSystem extends System {
           interactiveComponent.clicked = false;
           let interactionEntityTextComponent = interactionEntity.getComponent(TextComponent);
           let answerEntityTextComponent = answerEntity.getComponent(TextComponent);
-          answerEntityTextComponent.text = interactionEntityTextComponent.text;
+          answerEntityTextComponent.text += interactionEntityTextComponent.text;
         }
       }
     }

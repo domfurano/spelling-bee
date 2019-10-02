@@ -1,33 +1,32 @@
 import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {PositionComponent, TextComponent} from "../components";
+import {InputComponent, PositionComponent, TextComponent} from "../components";
 
 export class TextGenerationSystem extends System {
-  family: Family;
+  inputFamily: Family;
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
   word: string;
 
   constructor() {
     super();
-
     this.word = TextGenerationSystem.shuffleWord('ALCOVES');
-    this.canvas = document.getElementsByTagName('canvas')[0];
+    this.canvas = document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
   }
 
   onAttach(engine: Engine) {
     super.onAttach(engine);
-    this.family = new FamilyBuilder(engine).include(TextComponent, PositionComponent).build();
-  }
-
-  update(engine: Engine, delta: number) {
-    for (let i = 0; i < this.family.entities.length; i++) {
-      let entity = this.family.entities[i];
+    this.inputFamily = new FamilyBuilder(engine).include(InputComponent).build();
+    for (let i = 0; i < this.inputFamily.entities.length; i++) {
+      let entity = this.inputFamily.entities[i];
       if (entity.hasComponent(TextComponent)) {
         const text = entity.getComponent(TextComponent);
         text.text = this.word[i];
       }
     }
+  }
+
+  update(engine: Engine, delta: number) {
   }
 
   private static shuffleWord(word: string) {
