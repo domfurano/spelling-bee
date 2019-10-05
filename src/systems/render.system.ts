@@ -1,18 +1,23 @@
 import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {InteractiveComponent, PositionComponent, RenderComponent, TextComponent} from "../components";
+import {
+  AnswerComponent,
+  HtmlElementComponent,
+  InteractiveComponent,
+  PositionComponent,
+  RenderComponent,
+  TextComponent
+} from "../components";
 
 export class RenderSystem extends System {
   family: Family;
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
+  answerFamily: Family;
 
   constructor() {
     super();
     this.canvas = document.getElementById('canvas');
     if (this.canvas) {
-      this.canvas.id = 'canvas';
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
       this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
     }
   }
@@ -20,6 +25,7 @@ export class RenderSystem extends System {
   onAttach(engine: Engine) {
     super.onAttach(engine);
     this.family = new FamilyBuilder(engine).include(PositionComponent, RenderComponent).build();
+    this.answerFamily = new FamilyBuilder(engine).include(AnswerComponent).build();
   }
 
   update(engine: Engine, delta: number) {
@@ -50,6 +56,12 @@ export class RenderSystem extends System {
         this.ctx.textBaseline = text.baseLine;
         this.ctx.fillText(text.text, position.x, position.y);
       }
+    }
+
+    for (let entity of this.answerFamily.entities) {
+      let htmlElementComponent = entity.getComponent(HtmlElementComponent);
+      let textComponent = entity.getComponent(TextComponent);
+      htmlElementComponent.element.innerText = textComponent.text;
     }
   }
 }

@@ -1,9 +1,7 @@
 import {Blueprint} from '@mesa-engine/core';
-import {RenderableBlueprint} from './renderable.blueprint';
-import {AnswerComponent, TextComponent} from '../components';
+import {AnswerComponent, HtmlElementComponent, TextComponent} from '../components';
 
 export class CandidateAnswerBlueprint implements Blueprint {
-  blueprints = [new RenderableBlueprint];
   components = [
     {
       component: TextComponent,
@@ -13,7 +11,13 @@ export class CandidateAnswerBlueprint implements Blueprint {
       }
     },
     {
-      component: AnswerComponent
+      component: AnswerComponent,
+      value: <AnswerComponent>{
+        id: 'spnCandidateAnswer'
+      }
+    },
+    {
+      component: HtmlElementComponent
     }
   ];
 }

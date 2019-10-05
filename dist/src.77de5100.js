@@ -725,6 +725,20 @@ var ButtonComponent = function () {
 }();
 
 exports.ButtonComponent = ButtonComponent;
+},{}],"components/html-element.component.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var HtmlElementComponent = function () {
+  function HtmlElementComponent() {}
+
+  return HtmlElementComponent;
+}();
+
+exports.HtmlElementComponent = HtmlElementComponent;
 },{}],"components/index.ts":[function(require,module,exports) {
 "use strict";
 
@@ -753,7 +767,9 @@ __export(require("./answer.component"));
 __export(require("./input.component"));
 
 __export(require("./button.component"));
-},{"./render.component":"components/render.component.ts","./text.component":"components/text.component.ts","./position.component":"components/position.component.ts","./size.component":"components/size.component.ts","./interactiveComponent":"components/interactiveComponent.ts","./answer.component":"components/answer.component.ts","./input.component":"components/input.component.ts","./button.component":"components/button.component.ts"}],"blueprints/renderable.blueprint.ts":[function(require,module,exports) {
+
+__export(require("./html-element.component"));
+},{"./render.component":"components/render.component.ts","./text.component":"components/text.component.ts","./position.component":"components/position.component.ts","./size.component":"components/size.component.ts","./interactiveComponent":"components/interactiveComponent.ts","./answer.component":"components/answer.component.ts","./input.component":"components/input.component.ts","./button.component":"components/button.component.ts","./html-element.component":"components/html-element.component.ts"}],"blueprints/renderable.blueprint.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -782,13 +798,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var renderable_blueprint_1 = require("./renderable.blueprint");
-
 var components_1 = require("../components");
 
 var CandidateAnswerBlueprint = function () {
   function CandidateAnswerBlueprint() {
-    this.blueprints = [new renderable_blueprint_1.RenderableBlueprint()];
     this.components = [{
       component: components_1.TextComponent,
       value: {
@@ -796,7 +809,12 @@ var CandidateAnswerBlueprint = function () {
         color: 'black'
       }
     }, {
-      component: components_1.AnswerComponent
+      component: components_1.AnswerComponent,
+      value: {
+        id: 'spnCandidateAnswer'
+      }
+    }, {
+      component: components_1.HtmlElementComponent
     }];
   }
 
@@ -804,7 +822,7 @@ var CandidateAnswerBlueprint = function () {
 }();
 
 exports.CandidateAnswerBlueprint = CandidateAnswerBlueprint;
-},{"./renderable.blueprint":"blueprints/renderable.blueprint.ts","../components":"components/index.ts"}],"blueprints/hexagon.blueprint.ts":[function(require,module,exports) {
+},{"../components":"components/index.ts"}],"blueprints/hexagon.blueprint.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -978,8 +996,10 @@ var SceneCreatorSystem = function (_super) {
   SceneCreatorSystem.prototype.update = function (engine, delta) {};
 
   SceneCreatorSystem.prototype.create = function (engine) {
-    this.createHoneyComb(engine, window.innerWidth / 2, window.innerHeight / 2);
-    this.createCandidateAnswer(engine, window.innerWidth / 2, window.innerHeight / 2);
+    var halfWidth = 150;
+    var halfHeight = 160;
+    this.createHoneyComb(engine, halfWidth, halfHeight);
+    this.createCandidateAnswer(engine, halfWidth, halfHeight);
   };
 
   SceneCreatorSystem.prototype.createHoneyComb = function (engine, xOrigin, yOrigin) {
@@ -1001,7 +1021,7 @@ var SceneCreatorSystem = function (_super) {
       var positionComponent_1 = hexagaon_1.getComponent(components_1.PositionComponent);
       var sizeComponent_1 = hexagaon_1.getComponent(components_1.SizeComponent);
       var interactiveComponent_1 = hexagaon_1.getComponent(components_1.InteractiveComponent);
-      var angle = i * (Math.PI / 3) + Math.PI / 2;
+      var angle = i * SceneCreatorSystem.thirdPi + SceneCreatorSystem.halfPi;
       positionComponent_1.x = xOrigin + distance * Math.cos(angle);
       positionComponent_1.y = yOrigin + distance * Math.sin(angle);
       SceneCreatorSystem.createHexagonArea(positionComponent_1, sizeComponent_1, interactiveComponent_1);
@@ -1012,21 +1032,24 @@ var SceneCreatorSystem = function (_super) {
 
   SceneCreatorSystem.createHexagonArea = function (positionComponent, sizeComponent, interactiveComponent) {
     for (var i = 0; i < 7; i++) {
-      var x = positionComponent.x + sizeComponent.value * Math.cos(i * (Math.PI / 3));
-      var y = positionComponent.y + sizeComponent.value * Math.sin(i * (Math.PI / 3));
+      var x = positionComponent.x + sizeComponent.value * Math.cos(i * SceneCreatorSystem.thirdPi);
+      var y = positionComponent.y + sizeComponent.value * Math.sin(i * SceneCreatorSystem.thirdPi);
       interactiveComponent.area.push(new point_1.Point(x, y));
     }
   };
 
   SceneCreatorSystem.prototype.createCandidateAnswer = function (engine, xOrigin, yOrigin) {
     var candidateAnswer = engine.buildEntity(blueprints_1.CandidateAnswerBlueprint);
-    var positionComponent = candidateAnswer.getComponent(components_1.PositionComponent);
-    positionComponent.x = xOrigin;
-    positionComponent.y = yOrigin - 250;
+    var answerComponent = candidateAnswer.getComponent(components_1.AnswerComponent);
+    var htmlElementComponent = candidateAnswer.getComponent(components_1.HtmlElementComponent);
+    var textComponent = candidateAnswer.getComponent(components_1.TextComponent);
+    htmlElementComponent.element = document.getElementById(answerComponent.id);
     engine.addEntity(candidateAnswer);
     this.entities.push(candidateAnswer);
   };
 
+  SceneCreatorSystem.thirdPi = Math.PI / 3;
+  SceneCreatorSystem.halfPi = Math.PI / 2;
   return SceneCreatorSystem;
 }(core_1.System);
 
@@ -1173,7 +1196,11 @@ var InteractionListenerSystem = function (_super) {
 
     if (canvas) {
       canvas.addEventListener('click', function (event) {
-        _this.clicks.push(new point_1.Point(event.clientX, event.clientY));
+        var rect = canvas.getBoundingClientRect();
+        var x = event.clientX - rect.left;
+        var y = event.clientY - rect.top;
+
+        _this.clicks.push(new point_1.Point(x, y));
       });
     }
   };
@@ -1361,9 +1388,6 @@ var RenderSystem = function (_super) {
     _this.canvas = document.getElementById('canvas');
 
     if (_this.canvas) {
-      _this.canvas.id = 'canvas';
-      _this.canvas.width = window.innerWidth;
-      _this.canvas.height = window.innerHeight;
       _this.ctx = _this.canvas.getContext('2d');
     }
 
@@ -1374,6 +1398,7 @@ var RenderSystem = function (_super) {
     _super.prototype.onAttach.call(this, engine);
 
     this.family = new core_1.FamilyBuilder(engine).include(components_1.PositionComponent, components_1.RenderComponent).build();
+    this.answerFamily = new core_1.FamilyBuilder(engine).include(components_1.AnswerComponent).build();
   };
 
   RenderSystem.prototype.update = function (engine, delta) {
@@ -1408,6 +1433,13 @@ var RenderSystem = function (_super) {
         this.ctx.textBaseline = text.baseLine;
         this.ctx.fillText(text.text, position.x, position.y);
       }
+    }
+
+    for (var _d = 0, _e = this.answerFamily.entities; _d < _e.length; _d++) {
+      var entity = _e[_d];
+      var htmlElementComponent = entity.getComponent(components_1.HtmlElementComponent);
+      var textComponent = entity.getComponent(components_1.TextComponent);
+      htmlElementComponent.element.innerText = textComponent.text;
     }
   };
 
@@ -1512,7 +1544,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63423" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60808" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

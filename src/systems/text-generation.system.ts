@@ -1,5 +1,5 @@
 import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {InputComponent, PositionComponent, TextComponent} from "../components";
+import {InputComponent, TextComponent} from "../components";
 
 export class TextGenerationSystem extends System {
   inputFamily: Family;

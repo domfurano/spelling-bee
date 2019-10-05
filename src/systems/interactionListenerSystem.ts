@@ -19,7 +19,10 @@ export class InteractionListenerSystem extends System {
     let canvas = document.getElementById('canvas');
     if (canvas) {
       canvas.addEventListener('click', event => {
-        this.clicks.push(new Point(event.clientX, event.clientY));
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        this.clicks.push(new Point(x, y));
       });
     }
   }

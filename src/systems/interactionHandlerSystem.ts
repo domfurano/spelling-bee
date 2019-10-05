@@ -6,7 +6,6 @@ export class InteractionHandlerSystem extends System {
   private interactionFamily: Family;
   private answerFamily: Family;
   private clicks: Array<Point>;
-  private answer: string;
 
 
   constructor() {

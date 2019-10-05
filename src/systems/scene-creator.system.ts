@@ -1,9 +1,19 @@
 import {Engine, Entity, System} from "@mesa-engine/core";
 import {CandidateAnswerBlueprint, HexagonBlueprint} from "../blueprints";
-import {InteractiveComponent, PositionComponent, RenderComponent, SizeComponent} from "../components";
+import {
+  AnswerComponent,
+  HtmlElementComponent,
+  InteractiveComponent,
+  PositionComponent,
+  RenderComponent,
+  SizeComponent, TextComponent
+} from "../components";
 import {Point} from "../model/point";
+import html = Mocha.reporters.html;
 
 export class SceneCreatorSystem extends System {
+  private static thirdPi: number = Math.PI / 3;
+  private static halfPi: number = Math.PI / 2;
 
   private entities: Entity[] = [];
 
@@ -21,8 +31,10 @@ export class SceneCreatorSystem extends System {
   }
 
   create(engine: Engine) {
-    this.createHoneyComb(engine, window.innerWidth / 2, window.innerHeight / 2);
-    this.createCandidateAnswer(engine, window.innerWidth / 2, window.innerHeight / 2);
+    const halfWidth = 150;
+    const halfHeight = 160;
+    this.createHoneyComb(engine, halfWidth, halfHeight);
+    this.createCandidateAnswer(engine, halfWidth, halfHeight);
   }
 
   createHoneyComb(engine: Engine, xOrigin: number, yOrigin: number) {
@@ -44,7 +56,7 @@ export class SceneCreatorSystem extends System {
       const positionComponent = hexagaon.getComponent(PositionComponent);
       const sizeComponent = hexagaon.getComponent(SizeComponent);
       const interactiveComponent = hexagaon.getComponent(InteractiveComponent);
-      let angle = i * (Math.PI / 3) + Math.PI / 2;
+      let angle = i * SceneCreatorSystem.thirdPi + SceneCreatorSystem.halfPi;
       positionComponent.x = xOrigin + distance * Math.cos(angle);
       positionComponent.y = yOrigin + distance * Math.sin(angle);
       SceneCreatorSystem.createHexagonArea(positionComponent, sizeComponent, interactiveComponent);
@@ -55,17 +67,18 @@ export class SceneCreatorSystem extends System {
 
   private static createHexagonArea(positionComponent, sizeComponent, interactiveComponent) {
     for (let i = 0; i < 7; i++) {
-      const x = positionComponent.x + sizeComponent.value * Math.cos(i * (Math.PI / 3));
-      const y = positionComponent.y + sizeComponent.value * Math.sin(i * (Math.PI / 3));
+      const x = positionComponent.x + sizeComponent.value * Math.cos(i * SceneCreatorSystem.thirdPi);
+      const y = positionComponent.y + sizeComponent.value * Math.sin(i * SceneCreatorSystem.thirdPi);
       interactiveComponent.area.push(new Point(x, y));
     }
   }
 
   createCandidateAnswer(engine: Engine, xOrigin: number, yOrigin: number) {
     const candidateAnswer: Entity = engine.buildEntity(CandidateAnswerBlueprint);
-    const positionComponent = candidateAnswer.getComponent(PositionComponent);
-    positionComponent.x = xOrigin;
-    positionComponent.y = yOrigin - 250;
+    const answerComponent = candidateAnswer.getComponent(AnswerComponent);
+    const htmlElementComponent = candidateAnswer.getComponent(HtmlElementComponent);
+    const textComponent = candidateAnswer.getComponent(TextComponent);
+    htmlElementComponent.element = document.getElementById(answerComponent.id)!;
     engine.addEntity(candidateAnswer);
     this.entities.push(candidateAnswer);
   }
