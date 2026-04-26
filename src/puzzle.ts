@@ -1,8 +1,8 @@
 export interface Puzzle {
-  centerLetter: string;
-  outerLetters: string[];
-  validWords: string[];
-  pangrams: string[];
+  readonly centerLetter: string;
+  readonly outerLetters: readonly string[];
+  readonly validWords: readonly string[];
+  readonly pangrams: readonly string[];
 }
 
 export const ALCOVES_PUZZLE: Puzzle = {

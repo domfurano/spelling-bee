@@ -33,4 +33,13 @@ describe('ALCOVES_PUZZLE', () => {
       expect(word).toContain(ALCOVES_PUZZLE.centerLetter);
     }
   });
+
+  it('all validWords use only puzzle letters', () => {
+    const allowed = new Set([ALCOVES_PUZZLE.centerLetter, ...ALCOVES_PUZZLE.outerLetters]);
+    for (const word of ALCOVES_PUZZLE.validWords) {
+      for (const ch of word) {
+        expect(allowed.has(ch)).toBe(true);
+      }
+    }
+  });
 });
