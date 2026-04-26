@@ -51,6 +51,9 @@ typings/
 # Cache directory
 .cache/
 
+# Build output directory
+dist/
+
 # Output of 'npm pack'
 *.tgz
 
