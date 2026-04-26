@@ -1,0 +1,57 @@
+export interface Puzzle {
+  centerLetter: string;
+  outerLetters: string[];
+  validWords: string[];
+  pangrams: string[];
+}
+
+export const ALCOVES_PUZZLE: Puzzle = {
+  centerLetter: 'C',
+  outerLetters: ['A', 'L', 'O', 'V', 'E', 'S'],
+  validWords: [
+    'ALOE',
+    'ALOES',
+    'ALCOVE',
+    'ALCOVES',
+    'CAVE',
+    'CAVES',
+    'COVE',
+    'COVES',
+    'CLOVE',
+    'CLOVES',
+    'LACE',
+    'LACES',
+    'LAVE',
+    'LAVES',
+    'VALE',
+    'VALES',
+    'LOVE',
+    'LOVES',
+    'VOLE',
+    'VOLES',
+    'SLAVE',
+    'SALVE',
+    'SOLVE',
+    'SOLACE',
+    'SCALE',
+    'VOCAL',
+    'VOCALS',
+    'COLA',
+    'COLAS',
+    'COAL',
+    'COALS',
+    'SOLE',
+    'SLOE',
+    'CLOSE',
+    'VALVE',
+    'VALVES',
+    'LOAVES',
+    'LOCAL',
+    'LOCALE',
+    'LOCALS',
+    'COLES',
+    'ACES',
+    'LOCO',
+  ],
+  pangrams: ['ALCOVES'],
+};
