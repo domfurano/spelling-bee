@@ -60,7 +60,7 @@ export class InteractionListenerSystem extends System {
   }
 
   // http://www.eecs.umich.edu/courses/eecs380/HANDOUTS/PROJ2/InsidePoly.html
-  private static insidePolygon(points: [Point], N: number, p: Point) {
+  private static insidePolygon(points: Point[], N: number, p: Point) {
     let counter: number = 0;
     let i: number;
     let xInters: number;
