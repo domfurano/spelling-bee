@@ -2,13 +2,23 @@
 
 ## Architecture
 
-This project uses an **Entity Component System (ECS)** architecture via [`@mesa-engine/core`](https://www.npmjs.com/package/@mesa-engine/core).
+This project is a plain-TypeScript game with no external runtime dependencies.
 
-- **Entities** are plain containers; all data lives in **Components** (`src/components/`)
-- **Systems** (`src/systems/`) hold all logic and operate on families of entities each `update()` tick
-- **Blueprints** (`src/blueprints/`) are factory templates that pre-wire components onto a new entity
+- **State** lives in a single `GameState` object (`src/game-state.ts`) — a flat list of `HexTile` objects plus the current answer string
+- **Systems** (`src/systems/`) are plain classes with static methods; no base class or framework is involved
 - Rendering is done via HTML5 Canvas — `RenderSystem` owns the draw loop
-- DOM interaction (buttons, answer display) is handled through `HtmlElementComponent` and direct `getElementById` calls in systems
+- DOM interaction (buttons, answer display) is wired up directly in `src/index.ts`
+
+### Key files
+| File | Responsibility |
+|---|---|
+| `src/game-state.ts` | `HexTile` and `GameState` interfaces |
+| `src/systems/scene-creator.system.ts` | `createScene()` — builds the initial `GameState` with honeycomb tile positions |
+| `src/systems/text-generation.system.ts` | `TextGenerationSystem` — assigns/shuffles letters onto tiles |
+| `src/systems/interactionListenerSystem.ts` | `InteractionListenerSystem` — canvas click/touch → marks tiles as clicked |
+| `src/systems/interactionHandlerSystem.ts` | `InteractionHandlerSystem` — processes tile clicks, delete/scramble/enter logic |
+| `src/systems/render.system.ts` | `RenderSystem` — draws tiles + text each frame, syncs answer to DOM |
+| `src/index.ts` | Game loop, wires all systems together |
 
 ## Build and Test
 

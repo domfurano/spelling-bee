@@ -1,11 +1,6 @@
-import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {AnswerComponent, InputComponent, InteractiveComponent, TextComponent} from "../components";
+import { GameState, HexTile } from '../game-state';
 
-export class InteractionHandlerSystem extends System {
-  private interactionFamily: Family;
-  private answerFamily: Family;
-  private inputFamily: Family;
-
+export class InteractionHandlerSystem {
   private static readonly validWords = new Set([
     'ALOE', 'ALOES', 'ALCOVE', 'ALCOVES',
     'CAVE', 'CAVES', 'COVE', 'COVES', 'CLOVE', 'CLOVES',
@@ -18,115 +13,73 @@ export class InteractionHandlerSystem extends System {
     'COLES', 'OAVES', 'ACES', 'LOCO',
   ]);
 
-  onAttach(engine: Engine) {
-    super.onAttach(engine);
-    this.interactionFamily = new FamilyBuilder(engine).include(InteractiveComponent).build();
-    this.answerFamily = new FamilyBuilder(engine).include(AnswerComponent).build();
-    this.inputFamily = new FamilyBuilder(engine).include(InputComponent).build();
-    this.setupButtons();
-  }
-
-  update(engine: Engine, delta: number): void {
+  static processTileClicks(state: GameState): boolean {
     let letterAdded = false;
-    for (const interactionEntity of this.interactionFamily.entities) {
-      for (const answerEntity of this.answerFamily.entities) {
-        const interactiveComponent = interactionEntity.getComponent(InteractiveComponent);
-        if (interactiveComponent.clicked) {
-          interactiveComponent.clicked = false;
-          const interactionEntityTextComponent = interactionEntity.getComponent(TextComponent);
-          const answerEntityTextComponent = answerEntity.getComponent(TextComponent);
-          answerEntityTextComponent.text += interactionEntityTextComponent.text;
-          letterAdded = true;
-        }
+    for (const tile of state.tiles) {
+      if (tile.clicked) {
+        tile.clicked = false;
+        state.answer += tile.letter;
+        letterAdded = true;
       }
     }
-    if (letterAdded) {
-      this.triggerLetterAddedAnimation();
+    return letterAdded;
+  }
+
+  static deleteLastLetter(state: GameState): void {
+    if (state.answer.length > 0) {
+      state.answer = state.answer.slice(0, -1);
     }
   }
 
-  private setupButtons() {
-    const btnDelete = document.getElementById('btnDelete');
-    const btnScramble = document.getElementById('btnScramble');
-    const btnEnter = document.getElementById('btnEnter');
-
-    if (btnDelete) {
-      btnDelete.addEventListener('click', () => this.deleteLastLetter());
-    }
-    if (btnScramble) {
-      btnScramble.addEventListener('click', () => this.scramble());
-    }
-    if (btnEnter) {
-      btnEnter.addEventListener('click', () => this.enterWord());
-    }
-  }
-
-  private deleteLastLetter() {
-    for (const answerEntity of this.answerFamily.entities) {
-      const textComp = answerEntity.getComponent(TextComponent);
-      if (textComp.text.length > 0) {
-        textComp.text = textComp.text.slice(0, -1);
-      }
-    }
-  }
-
-  private scramble() {
-    const entities = [...this.inputFamily.entities];
-    if (entities.length < 2) return;
-    const outerEntities = entities.slice(1);
-    const letters = outerEntities.map(e => e.getComponent(TextComponent).text);
+  static scramble(tiles: HexTile[]): void {
+    if (tiles.length < 2) return;
+    const outerTiles = tiles.slice(1);
+    const letters = outerTiles.map(t => t.letter);
     for (let i = letters.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [letters[i], letters[j]] = [letters[j], letters[i]];
     }
-    outerEntities.forEach((e, idx) => {
-      e.getComponent(TextComponent).text = letters[idx];
-    });
+    outerTiles.forEach((t, idx) => { t.letter = letters[idx]; });
   }
 
-  private enterWord() {
-    for (const answerEntity of this.answerFamily.entities) {
-      const textComp = answerEntity.getComponent(TextComponent);
-      const word = textComp.text.toUpperCase();
-
-      if (word.length < 4) {
-        this.showMessage('Too short!', false);
-        this.triggerShakeAnimation();
-        return;
-      }
-
-      if (InteractionHandlerSystem.validWords.has(word)) {
-        this.showMessage('Nice! 🎉', true);
-      } else {
-        this.showMessage('Not in word list', false);
-        this.triggerShakeAnimation();
-      }
-      textComp.text = '';
+  static enterWord(state: GameState): void {
+    const word = state.answer.toUpperCase();
+    if (word.length < 4) {
+      InteractionHandlerSystem.showMessage('Too short!', false);
+      InteractionHandlerSystem.triggerShakeAnimation();
+      return;
     }
+    if (InteractionHandlerSystem.validWords.has(word)) {
+      InteractionHandlerSystem.showMessage('Nice! 🎉', true);
+    } else {
+      InteractionHandlerSystem.showMessage('Not in word list', false);
+      InteractionHandlerSystem.triggerShakeAnimation();
+    }
+    state.answer = '';
   }
 
-  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
+  private static messageTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private showMessage(text: string, isCorrect: boolean) {
+  private static showMessage(text: string, isCorrect: boolean): void {
     const msg = document.getElementById('message');
     if (msg) {
-      if (this.messageTimeout !== null) {
-        clearTimeout(this.messageTimeout);
-        this.messageTimeout = null;
+      if (InteractionHandlerSystem.messageTimeout !== null) {
+        clearTimeout(InteractionHandlerSystem.messageTimeout);
+        InteractionHandlerSystem.messageTimeout = null;
       }
       msg.className = '';
       msg.textContent = text;
-      void msg.offsetWidth; // Force reflow to restart animation even for same class
+      void msg.offsetWidth; // Force reflow to restart animation
       msg.className = isCorrect ? 'show-correct' : 'show-incorrect';
-      this.messageTimeout = setTimeout(() => {
+      InteractionHandlerSystem.messageTimeout = setTimeout(() => {
         msg.className = '';
         msg.textContent = '';
-        this.messageTimeout = null;
+        InteractionHandlerSystem.messageTimeout = null;
       }, 2000);
     }
   }
 
-  private triggerLetterAddedAnimation() {
+  static triggerLetterAddedAnimation(): void {
     const span = document.getElementById('spnCandidateAnswer');
     if (span) {
       span.classList.remove('letter-added');
@@ -135,7 +88,7 @@ export class InteractionHandlerSystem extends System {
     }
   }
 
-  private triggerShakeAnimation() {
+  private static triggerShakeAnimation(): void {
     const span = document.getElementById('spnCandidateAnswer');
     if (span) {
       span.classList.remove('shake', 'letter-added');

@@ -1,74 +1,45 @@
-import {Engine, Family, FamilyBuilder, System} from "@mesa-engine/core";
-import {
-  AnswerComponent,
-  HtmlElementComponent,
-  InteractiveComponent,
-  PositionComponent,
-  RenderComponent,
-  TextComponent
-} from "../components";
+import { GameState } from '../game-state';
 
 const CLICK_HIGHLIGHT_MS = 200;
 
-export class RenderSystem extends System {
-  family: Family;
-  ctx: CanvasRenderingContext2D;
-  canvas: HTMLCanvasElement;
-  answerFamily: Family;
+export class RenderSystem {
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly canvas: HTMLCanvasElement;
+  private readonly answerElement: HTMLElement;
 
-  constructor() {
-    super();
-    this.canvas = document.getElementById('canvas');
-    if (this.canvas) {
-      this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
-    }
+  constructor(canvas: HTMLCanvasElement, answerElement: HTMLElement) {
+    this.canvas = canvas;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Failed to acquire 2D rendering context from canvas.');
+    this.ctx = ctx;
+    this.answerElement = answerElement;
   }
 
-  onAttach(engine: Engine) {
-    super.onAttach(engine);
-    this.family = new FamilyBuilder(engine).include(PositionComponent, RenderComponent).build();
-    this.answerFamily = new FamilyBuilder(engine).include(AnswerComponent).build();
-  }
-
-  update(engine: Engine, delta: number) {
+  render(state: GameState): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    for (let entity of this.family.entities) {
-      const position = entity.getComponent(PositionComponent);
-      const render = entity.getComponent(RenderComponent);
-      this.ctx.fillStyle = render.color;
-      this.ctx.globalAlpha = render.opacity;
+    for (const tile of state.tiles) {
+      const timeSinceClick = Date.now() - tile.clickedAt;
+      const fillColor = timeSinceClick < CLICK_HIGHLIGHT_MS
+        ? RenderSystem.lightenColor(tile.color, 0.4)
+        : tile.color;
 
-      if (entity.hasComponent(InteractiveComponent)) {
-        const interactiveComponent = entity.getComponent(InteractiveComponent);
-        const timeSinceClick = Date.now() - interactiveComponent.clickedAt;
-        const fillColor = timeSinceClick < CLICK_HIGHLIGHT_MS
-          ? RenderSystem.lightenColor(render.color, 0.4)
-          : render.color;
-        this.ctx.beginPath();
-        for (let point of interactiveComponent.area) {
-          this.ctx.lineTo(point.x, point.y);
-        }
-        this.ctx.closePath();
-        this.ctx.fillStyle = fillColor;
-        this.ctx.fill();
+      this.ctx.beginPath();
+      for (const point of tile.area) {
+        this.ctx.lineTo(point.x, point.y);
       }
+      this.ctx.closePath();
+      this.ctx.fillStyle = fillColor;
+      this.ctx.fill();
 
-      if (entity.hasComponent(TextComponent)) {
-        const text = entity.getComponent(TextComponent);
-        this.ctx.font = text.font;
-        this.ctx.fillStyle = text.color;
-        this.ctx.textAlign = text.align;
-        this.ctx.textBaseline = text.baseLine;
-        this.ctx.fillText(text.text, position.x, position.y);
-      }
+      this.ctx.font = '32px sans-serif';
+      this.ctx.fillStyle = 'black';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(tile.letter, tile.x, tile.y);
     }
 
-    for (let entity of this.answerFamily.entities) {
-      let htmlElementComponent = entity.getComponent(HtmlElementComponent);
-      let textComponent = entity.getComponent(TextComponent);
-      htmlElementComponent.element.innerText = textComponent.text;
-    }
+    this.answerElement.innerText = state.answer;
   }
 
   private static lightenColor(hex: string, factor: number): string {
