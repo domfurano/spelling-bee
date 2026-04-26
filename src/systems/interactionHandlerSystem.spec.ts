@@ -3,6 +3,9 @@ import { Entity } from '@mesa-engine/core';
 import { InteractionHandlerSystem } from './interactionHandlerSystem';
 import { AnswerComponent, InteractiveComponent, TextComponent } from '../components';
 
+// Provide a minimal document stub so DOM-touching code paths are no-ops in Node
+(global as any).document = { getElementById: () => null };
+
 // Helper to create an entity that represents a letter hex tile
 function makeInteractionEntity(letterText: string, clicked: boolean): Entity {
   const entity = new Entity();
