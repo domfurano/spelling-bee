@@ -3,29 +3,29 @@ import { InteractionListenerSystem } from './interactionListenerSystem';
 import { Point } from '../model/point';
 
 // Access the private static method for testing via type cast
-const insidePolygon: (points: [Point], N: number, p: Point) => boolean =
+const insidePolygon: (points: Point[], N: number, p: Point) => boolean =
   (InteractionListenerSystem as any).insidePolygon;
 
 describe('InteractionListenerSystem', () => {
   describe('insidePolygon', () => {
     // Helper to build a square polygon centred at (cx, cy) with half-side s
-    function makeSquare(cx: number, cy: number, s: number): [Point] {
+    function makeSquare(cx: number, cy: number, s: number): Point[] {
       return [
         new Point(cx - s, cy - s),
         new Point(cx + s, cy - s),
         new Point(cx + s, cy + s),
         new Point(cx - s, cy + s),
-      ] as unknown as [Point];
+      ];
     }
 
     // Helper to build a regular hexagon centred at (cx, cy) with radius r
-    function makeHexagon(cx: number, cy: number, r: number): [Point] {
+    function makeHexagon(cx: number, cy: number, r: number): Point[] {
       const pts: Point[] = [];
       for (let i = 0; i < 6; i++) {
         const angle = (Math.PI / 3) * i;
         pts.push(new Point(cx + r * Math.cos(angle), cy + r * Math.sin(angle)));
       }
-      return pts as unknown as [Point];
+      return pts;
     }
 
     describe('square polygon', () => {

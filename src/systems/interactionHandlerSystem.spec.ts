@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { Entity } from '@mesa-engine/core';
 import { InteractionHandlerSystem } from './interactionHandlerSystem';
 import { AnswerComponent, InteractiveComponent, TextComponent } from '../components';
-import { Point } from '../model/point';
 
 // Helper to create an entity that represents a letter hex tile
 function makeInteractionEntity(letterText: string, clicked: boolean): Entity {
@@ -11,7 +10,7 @@ function makeInteractionEntity(letterText: string, clicked: boolean): Entity {
   textComp.text = letterText;
   const interactiveComp = entity.putComponent(InteractiveComponent);
   interactiveComp.clicked = clicked;
-  interactiveComp.area = [] as unknown as [Point];
+  interactiveComp.area = [];
   return entity;
 }
 
