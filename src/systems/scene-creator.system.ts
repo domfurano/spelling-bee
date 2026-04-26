@@ -1,55 +1,30 @@
 import { GameState, HexTile } from '../game-state';
-import { Point } from '../model/point';
 
-const THIRD_PI = Math.PI / 3;
-const HALF_PI = Math.PI / 2;
-const TILE_SIZE = 55;
-const DISTANCE = 100;
+// Flat-top hexagon: width=110px, height=96px
+// Positions are top-left corners of each tile within a 300×310px container.
+// Tile order: [center, bottom, bottom-left, top-left, top, top-right, bottom-right]
+const TILE_POSITIONS = [
+  { x: 95, y: 107 },
+  { x: 95, y: 207 },
+  { x: 8, y: 157 },
+  { x: 8, y: 57 },
+  { x: 95, y: 7 },
+  { x: 182, y: 57 },
+  { x: 182, y: 157 },
+];
 
-function createHexArea(x: number, y: number, size: number): Point[] {
-  const area: Point[] = [];
-  for (let i = 0; i < 7; i++) {
-    area.push(
-      new Point(
-        x + size * Math.cos(i * THIRD_PI),
-        y + size * Math.sin(i * THIRD_PI)
-      )
-    );
-  }
-  return area;
-}
-
-export function createScene(xOrigin = 150, yOrigin = 160): GameState {
+export function createScene(container: HTMLElement): GameState {
   const tiles: HexTile[] = [];
 
-  tiles.push({
-    letter: '~',
-    x: xOrigin,
-    y: yOrigin,
-    size: TILE_SIZE,
-    color: '#f8cd05',
-    area: createHexArea(xOrigin, yOrigin, TILE_SIZE),
-    clickedAt: 0,
-    clicked: false,
-    isCenter: true,
+  TILE_POSITIONS.forEach((pos, i) => {
+    const isCenter = i === 0;
+    const button = document.createElement('button');
+    button.className = 'hex-tile' + (isCenter ? ' center' : '');
+    button.style.left = `${pos.x}px`;
+    button.style.top = `${pos.y}px`;
+    container.appendChild(button);
+    tiles.push({ letter: '', isCenter, element: button });
   });
-
-  for (let i = 0; i < 6; i++) {
-    const angle = i * THIRD_PI + HALF_PI;
-    const x = xOrigin + DISTANCE * Math.cos(angle);
-    const y = yOrigin + DISTANCE * Math.sin(angle);
-    tiles.push({
-      letter: '~',
-      x,
-      y,
-      size: TILE_SIZE,
-      color: '#e6e6e6',
-      area: createHexArea(x, y, TILE_SIZE),
-      clickedAt: 0,
-      clicked: false,
-      isCenter: false,
-    });
-  }
 
   return { tiles, answer: '' };
 }

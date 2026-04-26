@@ -2,18 +2,10 @@ import { expect, describe, it } from 'vitest';
 import { InteractionHandlerSystem } from './interactionHandlerSystem';
 import { HexTile, GameState } from '../game-state';
 
-function makeTile(letter: string, clicked: boolean): HexTile {
-  return {
-    letter,
-    x: 0,
-    y: 0,
-    size: 55,
-    color: '#e6e6e6',
-    area: [],
-    clickedAt: 0,
-    clicked,
-    isCenter: false,
-  };
+function makeTile(letter: string, isCenter = false): HexTile {
+  const element = document.createElement('button');
+  element.textContent = letter;
+  return { letter, isCenter, element };
 }
 
 function makeState(answer: string, ...tiles: HexTile[]): GameState {
@@ -21,51 +13,72 @@ function makeState(answer: string, ...tiles: HexTile[]): GameState {
 }
 
 describe('InteractionHandlerSystem', () => {
-  describe('processTileClicks', () => {
-    it('appends the letter from a clicked tile to the candidate answer', () => {
-      const state = makeState('', makeTile('A', true));
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(state.answer).to.equal('A');
+  describe('deleteLastLetter', () => {
+    it('removes the last letter from the answer', () => {
+      const state = makeState('ABC');
+      InteractionHandlerSystem.deleteLastLetter(state);
+      expect(state.answer).to.equal('AB');
     });
 
-    it('resets clicked to false on the tile after processing', () => {
-      const tile = makeTile('B', true);
-      const state = makeState('', tile);
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(tile.clicked).to.be.false;
-    });
-
-    it('does not modify the answer when the tile is not clicked', () => {
-      const state = makeState('', makeTile('C', false));
-      InteractionHandlerSystem.processTileClicks(state);
+    it('does nothing when the answer is empty', () => {
+      const state = makeState('');
+      InteractionHandlerSystem.deleteLastLetter(state);
       expect(state.answer).to.equal('');
     });
+  });
 
-    it('appends to existing answer text when a tile is clicked', () => {
-      const state = makeState('SPEL', makeTile('E', true));
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(state.answer).to.equal('SPELE');
+  describe('scramble', () => {
+    it('keeps the center tile letter unchanged', () => {
+      const tiles = [
+        makeTile('C', true),
+        makeTile('A'),
+        makeTile('L'),
+        makeTile('O'),
+        makeTile('V'),
+        makeTile('E'),
+        makeTile('S'),
+      ];
+      InteractionHandlerSystem.scramble(tiles);
+      expect(tiles[0].letter).to.equal('C');
     });
 
-    it('accumulates letters across successive calls', () => {
-      const tile = makeTile('L', true);
-      const state = makeState('', tile);
-      InteractionHandlerSystem.processTileClicks(state);
-      tile.clicked = true;
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(state.answer).to.equal('LL');
+    it('preserves all outer letters after scramble', () => {
+      const tiles = [
+        makeTile('C', true),
+        makeTile('A'),
+        makeTile('L'),
+        makeTile('O'),
+        makeTile('V'),
+        makeTile('E'),
+        makeTile('S'),
+      ];
+      InteractionHandlerSystem.scramble(tiles);
+      const result = tiles
+        .slice(1)
+        .map((t) => t.letter)
+        .sort();
+      expect(result).to.deep.equal(['A', 'E', 'L', 'O', 'S', 'V']);
     });
 
-    it('handles multiple tiles where only the clicked one appends text', () => {
-      const state = makeState('', makeTile('X', true), makeTile('Y', false));
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(state.answer).to.equal('X');
+    it('syncs element textContent with letter after scramble', () => {
+      const tiles = [
+        makeTile('C', true),
+        makeTile('A'),
+        makeTile('L'),
+        makeTile('O'),
+        makeTile('V'),
+        makeTile('E'),
+        makeTile('S'),
+      ];
+      InteractionHandlerSystem.scramble(tiles);
+      for (const tile of tiles.slice(1)) {
+        expect(tile.element.textContent).to.equal(tile.letter);
+      }
     });
 
-    it('does nothing when there are no tiles', () => {
-      const state = makeState('HELLO');
-      InteractionHandlerSystem.processTileClicks(state);
-      expect(state.answer).to.equal('HELLO');
+    it('does nothing when there are fewer than two tiles', () => {
+      const tiles = [makeTile('C', true)];
+      expect(() => InteractionHandlerSystem.scramble(tiles)).not.toThrow();
     });
   });
 });

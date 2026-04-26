@@ -48,18 +48,6 @@ export class InteractionHandlerSystem {
     'LOCO',
   ]);
 
-  static processTileClicks(state: GameState): boolean {
-    let letterAdded = false;
-    for (const tile of state.tiles) {
-      if (tile.clicked) {
-        tile.clicked = false;
-        state.answer += tile.letter;
-        letterAdded = true;
-      }
-    }
-    return letterAdded;
-  }
-
   static deleteLastLetter(state: GameState): void {
     if (state.answer.length > 0) {
       state.answer = state.answer.slice(0, -1);
@@ -76,6 +64,7 @@ export class InteractionHandlerSystem {
     }
     outerTiles.forEach((t, idx) => {
       t.letter = letters[idx];
+      t.element.textContent = letters[idx];
     });
   }
 

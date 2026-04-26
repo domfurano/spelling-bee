@@ -4,6 +4,7 @@ export class TextGenerationSystem {
   static applyLetters(tiles: HexTile[], word: string): void {
     for (let i = 0; i < tiles.length && i < word.length; i++) {
       tiles[i].letter = word[i];
+      tiles[i].element.textContent = word[i];
     }
   }
 

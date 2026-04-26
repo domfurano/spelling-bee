@@ -1,15 +1,7 @@
-import { Point } from './model/point';
-
 export interface HexTile {
   letter: string;
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-  area: Point[];
-  clickedAt: number;
-  clicked: boolean;
   isCenter: boolean;
+  element: HTMLButtonElement;
 }
 
 export interface GameState {
