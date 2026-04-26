@@ -1,3 +1,5 @@
+import { Puzzle } from './puzzle';
+
 export interface HexTile {
   letter: string;
   isCenter: boolean;
@@ -7,4 +9,5 @@ export interface HexTile {
 export interface GameState {
   tiles: HexTile[];
   answer: string;
+  puzzle: Puzzle;
 }
