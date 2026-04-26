@@ -51,6 +51,9 @@ typings/
 # Cache directory
 .cache/
 
+# Parcel cache
+.parcel-cache/
+
 # Build output directory
 dist/
 
