@@ -10,7 +10,7 @@ export class TextGenerationSystem extends System {
   constructor() {
     super();
     this.word = TextGenerationSystem.shuffleWord('ALCOVES');
-    this.canvas = document.getElementById('canvas');
+    this.canvas = <HTMLCanvasElement>document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
   }
 
