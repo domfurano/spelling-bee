@@ -2,15 +2,50 @@ import { GameState, HexTile } from '../game-state';
 
 export class InteractionHandlerSystem {
   private static readonly validWords = new Set([
-    'ALOE', 'ALOES', 'ALCOVE', 'ALCOVES',
-    'CAVE', 'CAVES', 'COVE', 'COVES', 'CLOVE', 'CLOVES',
-    'LACE', 'LACES', 'LAVE', 'LAVES', 'VALE', 'VALES',
-    'LOVE', 'LOVES', 'VOLE', 'VOLES',
-    'SLAVE', 'SALVE', 'SOLVE', 'SOLACE',
-    'SCALE', 'VOCAL', 'VOCALS', 'COLA', 'COLAS',
-    'COAL', 'COALS', 'SOLE', 'SLOE', 'CLOSE',
-    'VALVE', 'VALVES', 'LOAVES', 'LOCAL', 'LOCALE', 'LOCALS',
-    'COLES', 'OAVES', 'ACES', 'LOCO',
+    'ALOE',
+    'ALOES',
+    'ALCOVE',
+    'ALCOVES',
+    'CAVE',
+    'CAVES',
+    'COVE',
+    'COVES',
+    'CLOVE',
+    'CLOVES',
+    'LACE',
+    'LACES',
+    'LAVE',
+    'LAVES',
+    'VALE',
+    'VALES',
+    'LOVE',
+    'LOVES',
+    'VOLE',
+    'VOLES',
+    'SLAVE',
+    'SALVE',
+    'SOLVE',
+    'SOLACE',
+    'SCALE',
+    'VOCAL',
+    'VOCALS',
+    'COLA',
+    'COLAS',
+    'COAL',
+    'COALS',
+    'SOLE',
+    'SLOE',
+    'CLOSE',
+    'VALVE',
+    'VALVES',
+    'LOAVES',
+    'LOCAL',
+    'LOCALE',
+    'LOCALS',
+    'COLES',
+    'OAVES',
+    'ACES',
+    'LOCO',
   ]);
 
   static processTileClicks(state: GameState): boolean {
@@ -34,12 +69,14 @@ export class InteractionHandlerSystem {
   static scramble(tiles: HexTile[]): void {
     if (tiles.length < 2) return;
     const outerTiles = tiles.slice(1);
-    const letters = outerTiles.map(t => t.letter);
+    const letters = outerTiles.map((t) => t.letter);
     for (let i = letters.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [letters[i], letters[j]] = [letters[j], letters[i]];
     }
-    outerTiles.forEach((t, idx) => { t.letter = letters[idx]; });
+    outerTiles.forEach((t, idx) => {
+      t.letter = letters[idx];
+    });
   }
 
   static enterWord(state: GameState): void {

@@ -1,9 +1,19 @@
-import { expect, describe, it, beforeEach } from 'vitest';
+import { expect, describe, it } from 'vitest';
 import { InteractionHandlerSystem } from './interactionHandlerSystem';
 import { HexTile, GameState } from '../game-state';
 
 function makeTile(letter: string, clicked: boolean): HexTile {
-  return { letter, x: 0, y: 0, size: 55, color: '#e6e6e6', area: [], clickedAt: 0, clicked, isCenter: false };
+  return {
+    letter,
+    x: 0,
+    y: 0,
+    size: 55,
+    color: '#e6e6e6',
+    area: [],
+    clickedAt: 0,
+    clicked,
+    isCenter: false,
+  };
 }
 
 function makeState(answer: string, ...tiles: HexTile[]): GameState {
@@ -59,4 +69,3 @@ describe('InteractionHandlerSystem', () => {
     });
   });
 });
-

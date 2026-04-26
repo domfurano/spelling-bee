@@ -9,7 +9,12 @@ const DISTANCE = 100;
 function createHexArea(x: number, y: number, size: number): Point[] {
   const area: Point[] = [];
   for (let i = 0; i < 7; i++) {
-    area.push(new Point(x + size * Math.cos(i * THIRD_PI), y + size * Math.sin(i * THIRD_PI)));
+    area.push(
+      new Point(
+        x + size * Math.cos(i * THIRD_PI),
+        y + size * Math.sin(i * THIRD_PI)
+      )
+    );
   }
   return area;
 }

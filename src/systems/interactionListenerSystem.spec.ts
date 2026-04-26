@@ -3,8 +3,9 @@ import { InteractionListenerSystem } from './interactionListenerSystem';
 import { Point } from '../model/point';
 
 // Access the private static method for testing via type cast
-const insidePolygon: (points: Point[], N: number, p: Point) => boolean =
-  (InteractionListenerSystem as any).insidePolygon;
+const insidePolygon: (points: Point[], N: number, p: Point) => boolean = (
+  InteractionListenerSystem as any
+).insidePolygon;
 
 describe('InteractionListenerSystem', () => {
   describe('insidePolygon', () => {

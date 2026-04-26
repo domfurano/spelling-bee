@@ -3,18 +3,30 @@ import { Point } from '../model/point';
 
 export class InteractionListenerSystem {
   static setup(canvas: HTMLCanvasElement, state: GameState): void {
-    canvas.addEventListener('click', event => {
-      const point = InteractionListenerSystem.getCanvasPoint(canvas, event.clientX, event.clientY);
+    canvas.addEventListener('click', (event) => {
+      const point = InteractionListenerSystem.getCanvasPoint(
+        canvas,
+        event.clientX,
+        event.clientY
+      );
       InteractionListenerSystem.processPoint(point, state);
     });
-    canvas.addEventListener('touchstart', event => {
-      event.preventDefault();
-      for (let i = 0; i < event.touches.length; i++) {
-        const touch = event.touches[i];
-        const point = InteractionListenerSystem.getCanvasPoint(canvas, touch.clientX, touch.clientY);
-        InteractionListenerSystem.processPoint(point, state);
-      }
-    }, { passive: false });
+    canvas.addEventListener(
+      'touchstart',
+      (event) => {
+        event.preventDefault();
+        for (let i = 0; i < event.touches.length; i++) {
+          const touch = event.touches[i];
+          const point = InteractionListenerSystem.getCanvasPoint(
+            canvas,
+            touch.clientX,
+            touch.clientY
+          );
+          InteractionListenerSystem.processPoint(point, state);
+        }
+      },
+      { passive: false }
+    );
   }
 
   private static processPoint(point: Point, state: GameState): void {
@@ -26,11 +38,18 @@ export class InteractionListenerSystem {
     }
   }
 
-  private static getCanvasPoint(canvas: HTMLCanvasElement, clientX: number, clientY: number): Point {
+  private static getCanvasPoint(
+    canvas: HTMLCanvasElement,
+    clientX: number,
+    clientY: number
+  ): Point {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    return new Point((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
+    return new Point(
+      (clientX - rect.left) * scaleX,
+      (clientY - rect.top) * scaleY
+    );
   }
 
   // http://www.eecs.umich.edu/courses/eecs380/HANDOUTS/PROJ2/InsidePoly.html
@@ -43,7 +62,8 @@ export class InteractionListenerSystem {
         if (p.y <= Math.max(p1.y, p2.y)) {
           if (p.x <= Math.max(p1.x, p2.x)) {
             if (p1.y !== p2.y) {
-              const xInters = (p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
+              const xInters =
+                ((p.y - p1.y) * (p2.x - p1.x)) / (p2.y - p1.y) + p1.x;
               if (p1.x === p2.x || p.x <= xInters) {
                 counter++;
               }

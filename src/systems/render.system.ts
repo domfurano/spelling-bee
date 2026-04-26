@@ -10,7 +10,8 @@ export class RenderSystem {
   constructor(canvas: HTMLCanvasElement, answerElement: HTMLElement) {
     this.canvas = canvas;
     const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Failed to acquire 2D rendering context from canvas.');
+    if (!ctx)
+      throw new Error('Failed to acquire 2D rendering context from canvas.');
     this.ctx = ctx;
     this.answerElement = answerElement;
   }
@@ -20,9 +21,10 @@ export class RenderSystem {
 
     for (const tile of state.tiles) {
       const timeSinceClick = Date.now() - tile.clickedAt;
-      const fillColor = timeSinceClick < CLICK_HIGHLIGHT_MS
-        ? RenderSystem.lightenColor(tile.color, 0.4)
-        : tile.color;
+      const fillColor =
+        timeSinceClick < CLICK_HIGHLIGHT_MS
+          ? RenderSystem.lightenColor(tile.color, 0.4)
+          : tile.color;
 
       this.ctx.beginPath();
       for (const point of tile.area) {
