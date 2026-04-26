@@ -27,4 +27,10 @@ describe('ALCOVES_PUZZLE', () => {
   it('ALCOVES is the only pangram', () => {
     expect(ALCOVES_PUZZLE.pangrams).toEqual(['ALCOVES']);
   });
+
+  it('all validWords contain centerLetter', () => {
+    for (const word of ALCOVES_PUZZLE.validWords) {
+      expect(word).toContain(ALCOVES_PUZZLE.centerLetter);
+    }
+  });
 });
