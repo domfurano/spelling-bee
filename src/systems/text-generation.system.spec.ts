@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import { TextGenerationSystem } from './text-generation.system';
 
 // Access the private static method for testing via type cast

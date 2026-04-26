@@ -73,9 +73,9 @@ export class InteractionListenerSystem extends System {
       if (p.y > Math.min(p1.y, p2.y)) {
         if (p.y <= Math.max(p1.y, p2.y)) {
           if (p.x <= Math.max(p1.x, p2.x)) {
-            if (p1.y != p2.y) {
+            if (p1.y !== p2.y) {
               xInters = (p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x;
-              if (p1.x == p2.x || p.x <= xInters) {
+              if (p1.x === p2.x || p.x <= xInters) {
                 counter++;
               }
             }
@@ -84,6 +84,6 @@ export class InteractionListenerSystem extends System {
       }
       p1 = p2;
     }
-    return counter % 2 != 0;
+    return counter % 2 !== 0;
   }
 }

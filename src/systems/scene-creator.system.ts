@@ -9,7 +9,6 @@ import {
   SizeComponent, TextComponent
 } from "../components";
 import {Point} from "../model/point";
-import html = Mocha.reporters.html;
 
 export class SceneCreatorSystem extends System {
   private static thirdPi: number = Math.PI / 3;

@@ -1,13 +1,14 @@
 {
   "name": "spelling-bee",
   "version": "1.0.0",
+  "type": "commonjs",
   "description": "A NYT Spelling Bee clone built with TypeScript",
   "source": "src/index.html",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite",
+    "start": vitest
     "test": "vitest",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
@@ -15,22 +16,14 @@
     "format:check": "prettier --check src/**/*.{ts,js,json,css,html}"
   },
   "devDependencies": {
-    "@types/chai": "^5.2.3",
-    "@types/mocha": "^10.0.10",
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
-    "@vitejs/plugin-legacy": "^8.0.1",
     "@vitest/ui": "^3.2.4",
-    "chai": "^6.2.2",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "jsdom": "^27.0.1",
-    "mocha": "^10.8.2",
     "prettier": "^3.8.3",
-    "sinon": "^21.1.2",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.10",
     "vitest": "^3.2.4"

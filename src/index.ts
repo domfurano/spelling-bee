@@ -12,7 +12,7 @@ export class App {
   }
 
   loop(timestamp) {
-    var progress = timestamp - this.lastRender;
+    const progress = timestamp - this.lastRender;
     this.engine.update(progress);
     this.lastRender = timestamp;
     window.requestAnimationFrame(this.loop.bind(this));

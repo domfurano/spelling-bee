@@ -37,7 +37,7 @@ The board consists of seven hexagonal tiles arranged in a honeycomb pattern. Six
 | Rendering | HTML5 Canvas |
 | Game Engine | [@mesa-engine/core](https://www.npmjs.com/package/@mesa-engine/core) (Entity Component System) |
 | Bundler | [Vite](https://vitejs.dev/) |
-| Testing | [Mocha](https://mochajs.org/) + [Chai](https://www.chaijs.com/) + [Sinon](https://sinonjs.org/) |
+| Testing | [Vitest](https://vitest.dev/) |
 | Linting | [ESLint](https://eslint.org/) + [@typescript-eslint](https://typescript-eslint.io/) |
 | Formatting | [Prettier](https://prettier.io/) |
 

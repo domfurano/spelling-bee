@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 import { Entity } from '@mesa-engine/core';
 import { InteractionHandlerSystem } from './interactionHandlerSystem';
 import { AnswerComponent, InteractiveComponent, TextComponent } from '../components';
