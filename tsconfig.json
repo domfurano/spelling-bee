@@ -1,8 +1,9 @@
 {
     "compilerOptions": {
-      "target": "es5",
-      "module": "CommonJS",
-      "strictNullChecks": true,
+      "target": "ES2020",
+      "module": "ES2020",
+      "moduleResolution": "node",
+      "strict": true,
       "removeComments": true,
       "preserveConstEnums": true,
       "resolveJsonModule": true,
@@ -10,7 +11,8 @@
       "outDir": "lib",
       "sourceMap": true,
       "declaration": true,
-      "lib": ["es6", "es2015.promise", "dom"]
+      "lib": ["ES2020", "DOM", "DOM.Iterable"],
+      "types": ["mocha"]
     },
     "include": ["src/**/*"],
     "exclude": ["./node_modules", "**/*.spec.ts"]
