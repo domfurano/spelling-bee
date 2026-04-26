@@ -1,52 +1,6 @@
 import { GameState, HexTile } from '../game-state';
 
 export class InteractionHandlerSystem {
-  private static readonly validWords = new Set([
-    'ALOE',
-    'ALOES',
-    'ALCOVE',
-    'ALCOVES',
-    'CAVE',
-    'CAVES',
-    'COVE',
-    'COVES',
-    'CLOVE',
-    'CLOVES',
-    'LACE',
-    'LACES',
-    'LAVE',
-    'LAVES',
-    'VALE',
-    'VALES',
-    'LOVE',
-    'LOVES',
-    'VOLE',
-    'VOLES',
-    'SLAVE',
-    'SALVE',
-    'SOLVE',
-    'SOLACE',
-    'SCALE',
-    'VOCAL',
-    'VOCALS',
-    'COLA',
-    'COLAS',
-    'COAL',
-    'COALS',
-    'SOLE',
-    'SLOE',
-    'CLOSE',
-    'VALVE',
-    'VALVES',
-    'LOAVES',
-    'LOCAL',
-    'LOCALE',
-    'LOCALS',
-    'COLES',
-    'OAVES',
-    'ACES',
-    'LOCO',
-  ]);
 
   static deleteLastLetter(state: GameState): void {
     if (state.answer.length > 0) {
@@ -70,13 +24,42 @@ export class InteractionHandlerSystem {
 
   static enterWord(state: GameState): void {
     const word = state.answer.toUpperCase();
+
     if (word.length < 4) {
       InteractionHandlerSystem.showMessage('Too short!', false);
       InteractionHandlerSystem.triggerShakeAnimation();
       return;
     }
-    if (InteractionHandlerSystem.validWords.has(word)) {
+
+    const hiveLetters = new Set([
+      state.puzzle.centerLetter,
+      ...state.puzzle.outerLetters,
+    ]);
+
+    if ([...word].some((ch) => !hiveLetters.has(ch))) {
+      InteractionHandlerSystem.showMessage('Not in the list', false);
+      InteractionHandlerSystem.triggerShakeAnimation();
+      state.answer = '';
+      return;
+    }
+
+    if (!word.includes(state.puzzle.centerLetter)) {
+      InteractionHandlerSystem.showMessage('Missing center letter', false);
+      InteractionHandlerSystem.triggerShakeAnimation();
+      state.answer = '';
+      return;
+    }
+
+    if (state.foundWords.has(word)) {
+      InteractionHandlerSystem.showMessage('Already found!', false);
+      InteractionHandlerSystem.triggerShakeAnimation();
+      state.answer = '';
+      return;
+    }
+
+    if (state.puzzle.validWords.includes(word)) {
       InteractionHandlerSystem.showMessage('Nice! 🎉', true);
+      state.foundWords.add(word);
     } else {
       InteractionHandlerSystem.showMessage('Not in word list', false);
       InteractionHandlerSystem.triggerShakeAnimation();
