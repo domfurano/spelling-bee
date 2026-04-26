@@ -1,6 +1,10 @@
 # Spelling Bee 🐝
 
-A browser-based word puzzle game inspired by the classic Spelling Bee format. Build as many words as you can using the 7 letters arranged in a honeycomb — but every word must include the center letter!
+A NYT Spelling Bee clone built with TypeScript. Build as many words as you can using the 7 letters arranged in a honeycomb — but every word must include the center letter!
+
+## 🎮 Live Demo
+
+Play the game at: **https://domfurano.github.io/spelling-bee/**
 
 ## Game Overview
 
@@ -51,39 +55,23 @@ cd spelling-bee
 npm install
 ```
 
-## Running Locally
+## 🚀 Running Locally
 
-The pre-built game is available in the `dist/` directory. Serve it with any static file server:
-
-```bash
-# Using npx serve
-npx serve dist
-
-# Using Python's built-in server
-python3 -m http.server --directory dist 8080
-
-# Using http-server (npm)
-npx http-server dist
-```
-
-Then open your browser and navigate to `http://localhost:3000` (or whichever port your server uses).
-
-### Build from Source
-
-To rebuild the project from source using Parcel:
+Start a development server with hot reload:
 
 ```bash
-# Install Parcel globally (if not already installed)
-npm install -g parcel
-
-# Build for production
-parcel build src/index.html --out-dir dist
-
-# Or run a development server with hot reload
-parcel src/index.html
+npm start
 ```
 
-## Running Tests
+## 🏗️ Build
+
+Build for production (output goes to `dist/`):
+
+```bash
+npm run build
+```
+
+## 🧪 Running Tests
 
 ```bash
 npm test
@@ -109,4 +97,3 @@ spelling-bee/
 ## License
 
 See [LICENSE](LICENSE).
-

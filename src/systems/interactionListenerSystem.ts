@@ -16,15 +16,26 @@ export class InteractionListenerSystem extends System {
   onAttach(engine: Engine) {
     super.onAttach(engine);
     this.interactionFamily = new FamilyBuilder(engine).include(InteractiveComponent).build();
-    let canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     if (canvas) {
       canvas.addEventListener('click', event => {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        this.clicks.push(new Point(x, y));
+        this.clicks.push(this.getCanvasPoint(canvas, event.clientX, event.clientY));
       });
+      canvas.addEventListener('touchstart', event => {
+        event.preventDefault();
+        for (let i = 0; i < event.touches.length; i++) {
+          const touch = event.touches[i];
+          this.clicks.push(this.getCanvasPoint(canvas, touch.clientX, touch.clientY));
+        }
+      }, {passive: false});
     }
+  }
+
+  private getCanvasPoint(canvas: HTMLCanvasElement, clientX: number, clientY: number): Point {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return new Point((clientX - rect.left) * scaleX, (clientY - rect.top) * scaleY);
   }
 
   update(engine: Engine, delta: number): void {
@@ -35,6 +46,7 @@ export class InteractionListenerSystem extends System {
           const inside: boolean = InteractionListenerSystem.insidePolygon(interactiveComponent.area, 6, click);
           if (inside) {
             interactiveComponent.clicked = true;
+            interactiveComponent.clickedAt = Date.now();
             if (entity.hasComponent(TextComponent)) {
               const textComponent = entity.getComponent(TextComponent);
               this.answer += textComponent.text;
@@ -48,7 +60,7 @@ export class InteractionListenerSystem extends System {
   }
 
   // http://www.eecs.umich.edu/courses/eecs380/HANDOUTS/PROJ2/InsidePoly.html
-  private static insidePolygon(points: [Point], N: number, p: Point) {
+  private static insidePolygon(points: Point[], N: number, p: Point) {
     let counter: number = 0;
     let i: number;
     let xInters: number;

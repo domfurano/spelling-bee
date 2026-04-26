@@ -10,8 +10,18 @@ export class TextGenerationSystem extends System {
   constructor() {
     super();
     this.word = TextGenerationSystem.shuffleWord('ALCOVES');
-    this.canvas = document.getElementById('canvas');
-    this.ctx = <CanvasRenderingContext2D>this.canvas.getContext('2d');
+    const canvasElement = document.getElementById('canvas');
+    if (!(canvasElement instanceof HTMLCanvasElement)) {
+      throw new Error("Expected element with id 'canvas' to be an HTMLCanvasElement.");
+    }
+
+    const context = canvasElement.getContext('2d');
+    if (context === null) {
+      throw new Error("Failed to acquire 2D rendering context from canvas.");
+    }
+
+    this.canvas = canvasElement;
+    this.ctx = context;
   }
 
   onAttach(engine: Engine) {
