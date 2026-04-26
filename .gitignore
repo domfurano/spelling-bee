@@ -72,3 +72,9 @@ dist/
 # Parcel build output and cache
 dist
 .parcel-cache
+
+# Git worktrees
+.worktrees/
+
+# Brainstorm visual companion
+.superpowers/
