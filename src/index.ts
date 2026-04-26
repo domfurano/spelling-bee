@@ -8,7 +8,10 @@ const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const answerEl = document.getElementById('spnCandidateAnswer')!;
 
 const state = createScene();
-TextGenerationSystem.applyLetters(state.tiles, TextGenerationSystem.shuffleWord('ALCOVES'));
+TextGenerationSystem.applyLetters(
+  state.tiles,
+  TextGenerationSystem.shuffleWord('ALCOVES')
+);
 
 const renderer = new RenderSystem(canvas, answerEl);
 

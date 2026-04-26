@@ -1,133 +1,163 @@
-@CHARSET "UTF-8";
+@charset "UTF-8";
 
-html, body, #game {
-    width: 100%;
-    height: 100%;
+html,
+body,
+#game {
+  width: 100%;
+  height: 100%;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #fafafa;
 }
 
 #game {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 16px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 #spnCandidateAnswer {
-    font-family: sans-serif;
-    font-size: 42px;
-    min-height: 60px;
-    letter-spacing: 3px;
-    text-align: center;
+  font-family: sans-serif;
+  font-size: 42px;
+  min-height: 60px;
+  letter-spacing: 3px;
+  text-align: center;
 }
 
 #spnCandidateAnswer.letter-added {
-    animation: letter-pop 0.2s ease-out;
+  animation: letter-pop 0.2s ease-out;
 }
 
 #spnCandidateAnswer.shake {
-    animation: shake 0.4s ease;
+  animation: shake 0.4s ease;
 }
 
 @keyframes letter-pop {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.12); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
 }
 
 #canvas {
-    max-width: 100%;
-    touch-action: none;
-    display: block;
+  max-width: 100%;
+  touch-action: none;
+  display: block;
 }
 
 #buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #buttons button {
-    padding: 12px 20px;
-    font-size: 16px;
-    font-family: sans-serif;
-    border: 2px solid #c8c8c8;
-    border-radius: 24px;
-    background: #ffffff;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.1s ease;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    min-width: 80px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-family: sans-serif;
+  border: 2px solid #c8c8c8;
+  border-radius: 24px;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  min-width: 80px;
 }
 
 #buttons button:hover {
-    background: #f0f0f0;
+  background: #f0f0f0;
 }
 
 #buttons button:active {
-    transform: scale(0.94);
-    background: #e0e0e0;
+  transform: scale(0.94);
+  background: #e0e0e0;
 }
 
 #message {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 22px;
-    border-radius: 20px;
-    font-family: sans-serif;
-    font-size: 18px;
-    font-weight: bold;
-    pointer-events: none;
-    white-space: nowrap;
-    z-index: 100;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 20px;
+  font-family: sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 100;
 }
 
 #message.show-correct {
-    animation: message-appear 2s ease forwards;
-    background: #4caf50;
-    color: white;
+  animation: message-appear 2s ease forwards;
+  background: #4caf50;
+  color: white;
 }
 
 #message.show-incorrect {
-    animation: message-appear 2s ease forwards;
-    background: #f44336;
-    color: white;
+  animation: message-appear 2s ease forwards;
+  background: #f44336;
+  color: white;
 }
 
 @keyframes message-appear {
-    0% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
-    15% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    75% { opacity: 1; transform: translateX(-50%) translateY(0); }
-    100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  75% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
 }
 
 @media (max-width: 400px) {
-    #spnCandidateAnswer {
-        font-size: 32px;
-        min-height: 48px;
-    }
+  #spnCandidateAnswer {
+    font-size: 32px;
+    min-height: 48px;
+  }
 
-    #buttons button {
-        padding: 10px 16px;
-        font-size: 14px;
-        min-width: 70px;
-    }
+  #buttons button {
+    padding: 10px 16px;
+    font-size: 14px;
+    min-width: 70px;
+  }
 }

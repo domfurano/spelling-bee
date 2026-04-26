@@ -2,8 +2,8 @@ import { expect } from 'vitest';
 import { TextGenerationSystem } from './text-generation.system';
 
 // Access the private static method for testing via type cast
-const shuffleWord: (word: string) => string =
-  (TextGenerationSystem as any).shuffleWord;
+const shuffleWord: (word: string) => string = (TextGenerationSystem as any)
+  .shuffleWord;
 
 describe('TextGenerationSystem', () => {
   describe('shuffleWord', () => {
