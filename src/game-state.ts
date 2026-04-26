@@ -10,4 +10,5 @@ export interface GameState {
   tiles: HexTile[];
   answer: string;
   puzzle: Puzzle;
+  foundWords: Set<string>;
 }
