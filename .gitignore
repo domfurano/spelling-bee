@@ -48,6 +48,12 @@ typings/
 # Optional REPL history
 .node_repl_history
 
+# Cache directory
+.cache/
+
+# Build output directory
+dist/
+
 # Output of 'npm pack'
 *.tgz
 
@@ -59,3 +65,7 @@ typings/
 
 # next.js build output
 .next
+
+# Parcel build output and cache
+dist
+.parcel-cache
