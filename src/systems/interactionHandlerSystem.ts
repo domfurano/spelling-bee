@@ -105,14 +105,23 @@ export class InteractionHandlerSystem extends System {
     }
   }
 
+  private messageTimeout: ReturnType<typeof setTimeout> | null = null;
+
   private showMessage(text: string, isCorrect: boolean) {
     const msg = document.getElementById('message');
     if (msg) {
+      if (this.messageTimeout !== null) {
+        clearTimeout(this.messageTimeout);
+        this.messageTimeout = null;
+      }
+      msg.className = '';
       msg.textContent = text;
+      void msg.offsetWidth; // Force reflow to restart animation even for same class
       msg.className = isCorrect ? 'show-correct' : 'show-incorrect';
-      setTimeout(() => {
+      this.messageTimeout = setTimeout(() => {
         msg.className = '';
         msg.textContent = '';
+        this.messageTimeout = null;
       }, 2000);
     }
   }
