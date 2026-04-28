@@ -5,6 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Generated word list (downloaded on demand by scripts/generate-puzzle.mjs)
+scripts/wordlist.txt
+
 # Runtime data
 pids
 *.pid
