@@ -20,7 +20,7 @@ const foundWordsListEl = document.getElementById('foundWordsList')!;
 
 const max = InteractionHandlerSystem.maxScore(
   puzzle.validWords,
-  puzzle.pangrams,
+  puzzle.pangrams
 );
 
 function refreshScoreDisplay(): void {
@@ -32,15 +32,13 @@ function refreshScoreDisplay(): void {
 function renderFoundWords(): void {
   const pangrams = new Set(puzzle.pangrams);
   foundWordsListEl.innerHTML = '';
-  [...state.foundWords]
-    .sort()
-    .forEach((word) => {
-      const li = document.createElement('li');
-      li.textContent = word;
-      li.dataset.word = word;
-      if (pangrams.has(word)) li.classList.add('pangram');
-      foundWordsListEl.appendChild(li);
-    });
+  [...state.foundWords].sort().forEach((word) => {
+    const li = document.createElement('li');
+    li.textContent = word;
+    li.dataset.word = word;
+    if (pangrams.has(word)) li.classList.add('pangram');
+    foundWordsListEl.appendChild(li);
+  });
 }
 
 function handleEnterOutcome(outcome: EnterOutcome, word: string): void {

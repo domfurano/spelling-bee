@@ -1,5 +1,10 @@
 import { expect, describe, it } from 'vitest';
-import { ALCOVES_PUZZLE, getDailyPuzzle, assertValidPuzzle, Puzzle } from './puzzle';
+import {
+  ALCOVES_PUZZLE,
+  getDailyPuzzle,
+  assertValidPuzzle,
+  Puzzle,
+} from './puzzle';
 
 describe('ALCOVES_PUZZLE', () => {
   it('has a single uppercase centerLetter', () => {
@@ -14,7 +19,9 @@ describe('ALCOVES_PUZZLE', () => {
   });
 
   it('centerLetter is not in outerLetters', () => {
-    expect(ALCOVES_PUZZLE.outerLetters).not.toContain(ALCOVES_PUZZLE.centerLetter);
+    expect(ALCOVES_PUZZLE.outerLetters).not.toContain(
+      ALCOVES_PUZZLE.centerLetter
+    );
   });
 
   it('pangrams are a subset of validWords', () => {
@@ -35,7 +42,10 @@ describe('ALCOVES_PUZZLE', () => {
   });
 
   it('all validWords use only puzzle letters', () => {
-    const allowed = new Set([ALCOVES_PUZZLE.centerLetter, ...ALCOVES_PUZZLE.outerLetters]);
+    const allowed = new Set([
+      ALCOVES_PUZZLE.centerLetter,
+      ...ALCOVES_PUZZLE.outerLetters,
+    ]);
     for (const word of ALCOVES_PUZZLE.validWords) {
       for (const ch of word) {
         expect(allowed.has(ch)).toBe(true);
@@ -98,15 +108,15 @@ describe('assertValidPuzzle', () => {
   });
 
   it('throws when centerLetter is more than one character', () => {
-    expect(() =>
-      assertValidPuzzle({ ...valid, centerLetter: 'CA' })
-    ).toThrow('centerLetter');
+    expect(() => assertValidPuzzle({ ...valid, centerLetter: 'CA' })).toThrow(
+      'centerLetter'
+    );
   });
 
   it('throws when centerLetter is lowercase', () => {
-    expect(() =>
-      assertValidPuzzle({ ...valid, centerLetter: 'c' })
-    ).toThrow('centerLetter');
+    expect(() => assertValidPuzzle({ ...valid, centerLetter: 'c' })).toThrow(
+      'centerLetter'
+    );
   });
 
   it('throws when outerLetters has fewer than 6 entries', () => {
@@ -117,13 +127,19 @@ describe('assertValidPuzzle', () => {
 
   it('throws when outerLetters has more than 6 entries', () => {
     expect(() =>
-      assertValidPuzzle({ ...valid, outerLetters: ['A', 'L', 'O', 'V', 'E', 'S', 'X'] })
+      assertValidPuzzle({
+        ...valid,
+        outerLetters: ['A', 'L', 'O', 'V', 'E', 'S', 'X'],
+      })
     ).toThrow('outerLetters');
   });
 
   it('throws when an outerLetter is lowercase', () => {
     expect(() =>
-      assertValidPuzzle({ ...valid, outerLetters: ['a', 'L', 'O', 'V', 'E', 'S'] })
+      assertValidPuzzle({
+        ...valid,
+        outerLetters: ['a', 'L', 'O', 'V', 'E', 'S'],
+      })
     ).toThrow('outerLetter');
   });
 

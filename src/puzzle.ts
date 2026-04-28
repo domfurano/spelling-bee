@@ -67,10 +67,12 @@ export function getDailyPuzzle(puzzles: Puzzle[], date: Date): Puzzle {
   const today = Date.UTC(
     date.getUTCFullYear(),
     date.getUTCMonth(),
-    date.getUTCDate(),
+    date.getUTCDate()
   );
   const dayIndex = Math.floor((today - epoch) / dayMs);
-  return puzzles[((dayIndex % puzzles.length) + puzzles.length) % puzzles.length];
+  return puzzles[
+    ((dayIndex % puzzles.length) + puzzles.length) % puzzles.length
+  ];
 }
 
 export const ALCOVES_PUZZLE: Puzzle = {
