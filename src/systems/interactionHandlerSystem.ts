@@ -23,7 +23,10 @@ const RANKS: { minPct: number; label: string }[] = [
 ];
 
 export class InteractionHandlerSystem {
-  static maxScore(validWords: string[], pangrams: string[]): number {
+  static maxScore(
+    validWords: readonly string[],
+    pangrams: readonly string[]
+  ): number {
     return validWords.reduce(
       (sum, w) => sum + InteractionHandlerSystem.scoreWord(w, pangrams),
       0
@@ -38,7 +41,7 @@ export class InteractionHandlerSystem {
     return 'Beginner';
   }
 
-  static scoreWord(word: string, pangrams: string[]): number {
+  static scoreWord(word: string, pangrams: readonly string[]): number {
     const length = word.length;
     const base = length === 4 ? 1 : length;
     const pangramBonus = pangrams.includes(word) ? 7 : 0;
