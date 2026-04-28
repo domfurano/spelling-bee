@@ -27,5 +27,5 @@ export function createScene(container: HTMLElement, puzzle: Puzzle): GameState {
     tiles.push({ letter: '', isCenter, element: button });
   });
 
-  return { tiles, answer: '', puzzle, foundWords: new Set() };
+  return { tiles, answer: '', puzzle, foundWords: new Set(), score: 0 };
 }

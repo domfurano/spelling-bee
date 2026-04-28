@@ -9,12 +9,14 @@
     "preview": "vite preview",
     "start": "vite",
     "test": "vitest",
+    "test:e2e": "playwright test",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.{ts,js,json,css,html}",
     "format:check": "prettier --check src/**/*.{ts,js,json,css,html}"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
     "@vitest/ui": "^3.2.4",

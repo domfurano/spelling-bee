@@ -11,4 +11,5 @@ export interface GameState {
   answer: string;
   puzzle: Puzzle;
   foundWords: Set<string>;
+  score: number;
 }

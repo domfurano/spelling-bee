@@ -7,13 +7,22 @@
   </head>
 
   <body>
-    <div id="game">
-      <span id="spnCandidateAnswer"></span>
-      <div id="honeycomb"></div>
-      <div id="buttons">
-        <button id="btnDelete">Delete</button>
-        <button id="btnScramble">Scramble</button>
-        <button id="btnEnter">Enter</button>
+    <div id="app">
+      <div id="game">
+        <span id="spnCandidateAnswer"></span>
+        <span id="spnScore">Score: 0</span>
+        <span id="spnRank">Beginner</span>
+        <span id="spnWordCount">0 / 0 words</span>
+        <div id="honeycomb"></div>
+        <div id="buttons">
+          <button id="btnDelete">Delete</button>
+          <button id="btnScramble">Scramble</button>
+          <button id="btnEnter">Enter</button>
+        </div>
+      </div>
+      <div id="foundWords">
+        <h3 id="foundWordsHeading">Found words</h3>
+        <ul id="foundWordsList"></ul>
       </div>
     </div>
     <div id="message"></div>

@@ -1,6 +1,49 @@
 import { GameState, HexTile } from '../game-state';
 
+export type EnterOutcome =
+  | 'too-short'
+  | 'invalid-letter'
+  | 'missing-center'
+  | 'already-found'
+  | 'not-in-list'
+  | 'accepted'
+  | 'accepted-pangram';
+
+const RANKS: { minPct: number; label: string }[] = [
+  { minPct: 100, label: 'Queen Bee' },
+  { minPct: 70, label: 'Genius' },
+  { minPct: 50, label: 'Amazing' },
+  { minPct: 40, label: 'Great' },
+  { minPct: 25, label: 'Nice' },
+  { minPct: 15, label: 'Solid' },
+  { minPct: 8, label: 'Good' },
+  { minPct: 5, label: 'Moving Up' },
+  { minPct: 2, label: 'Good Start' },
+  { minPct: 0, label: 'Beginner' },
+];
+
 export class InteractionHandlerSystem {
+  static maxScore(validWords: string[], pangrams: string[]): number {
+    return validWords.reduce(
+      (sum, w) => sum + InteractionHandlerSystem.scoreWord(w, pangrams),
+      0
+    );
+  }
+
+  static getRank(score: number, max: number): string {
+    const pct = max === 0 ? 0 : (score / max) * 100;
+    for (const rank of RANKS) {
+      if (pct >= rank.minPct) return rank.label;
+    }
+    return 'Beginner';
+  }
+
+  static scoreWord(word: string, pangrams: string[]): number {
+    const length = word.length;
+    const base = length === 4 ? 1 : length;
+    const pangramBonus = pangrams.includes(word) ? 7 : 0;
+    return base + pangramBonus;
+  }
 
   static deleteLastLetter(state: GameState): void {
     if (state.answer.length > 0) {
@@ -22,13 +65,13 @@ export class InteractionHandlerSystem {
     });
   }
 
-  static enterWord(state: GameState): void {
+  static enterWord(state: GameState): EnterOutcome {
     const word = state.answer.toUpperCase();
 
     if (word.length < 4) {
       InteractionHandlerSystem.showMessage('Too short!', false);
       InteractionHandlerSystem.triggerShakeAnimation();
-      return;
+      return 'too-short';
     }
 
     const hiveLetters = new Set([
@@ -40,31 +83,72 @@ export class InteractionHandlerSystem {
       InteractionHandlerSystem.showMessage('Not in the list', false);
       InteractionHandlerSystem.triggerShakeAnimation();
       state.answer = '';
-      return;
+      return 'invalid-letter';
     }
 
     if (!word.includes(state.puzzle.centerLetter)) {
       InteractionHandlerSystem.showMessage('Missing center letter', false);
       InteractionHandlerSystem.triggerShakeAnimation();
       state.answer = '';
-      return;
+      return 'missing-center';
     }
 
     if (state.foundWords.has(word)) {
       InteractionHandlerSystem.showMessage('Already found!', false);
       InteractionHandlerSystem.triggerShakeAnimation();
       state.answer = '';
-      return;
+      return 'already-found';
     }
 
     if (state.puzzle.validWords.includes(word)) {
-      InteractionHandlerSystem.showMessage('Nice! 🎉', true);
+      const isPangram = state.puzzle.pangrams.includes(word);
+      if (isPangram) {
+        InteractionHandlerSystem.showMessage('Pangram! 🌟', true);
+        InteractionHandlerSystem.triggerPangramCelebration();
+      } else {
+        InteractionHandlerSystem.showMessage('Nice! 🎉', true);
+      }
       state.foundWords.add(word);
+      state.score += InteractionHandlerSystem.scoreWord(
+        word,
+        state.puzzle.pangrams
+      );
+      state.answer = '';
+      return isPangram ? 'accepted-pangram' : 'accepted';
     } else {
       InteractionHandlerSystem.showMessage('Not in word list', false);
       InteractionHandlerSystem.triggerShakeAnimation();
     }
     state.answer = '';
+    return 'not-in-list';
+  }
+
+  static handleKeydown(
+    e: KeyboardEvent,
+    state: GameState,
+    answerEl: HTMLElement
+  ): EnterOutcome | null {
+    const hiveLetters = new Set([
+      state.puzzle.centerLetter,
+      ...state.puzzle.outerLetters,
+    ]);
+    const upper = e.key.toUpperCase();
+
+    if (e.key.length === 1 && hiveLetters.has(upper)) {
+      state.answer += upper;
+      answerEl.innerText = state.answer;
+      InteractionHandlerSystem.triggerLetterAddedAnimation();
+      return null;
+    } else if (e.key === 'Backspace') {
+      InteractionHandlerSystem.deleteLastLetter(state);
+      answerEl.innerText = state.answer;
+      return null;
+    } else if (e.key === 'Enter') {
+      const outcome = InteractionHandlerSystem.enterWord(state);
+      answerEl.innerText = state.answer;
+      return outcome;
+    }
+    return null;
   }
 
   private static messageTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -86,6 +170,15 @@ export class InteractionHandlerSystem {
         InteractionHandlerSystem.messageTimeout = null;
       }, 2000);
     }
+  }
+
+  static triggerPangramCelebration(): void {
+    const tiles = document.querySelectorAll<HTMLElement>('.hex-tile');
+    tiles.forEach((tile) => {
+      tile.classList.remove('pangram-flash');
+      void tile.offsetWidth; // Force reflow to restart animation
+      tile.classList.add('pangram-flash');
+    });
   }
 
   static triggerLetterAddedAnimation(): void {
