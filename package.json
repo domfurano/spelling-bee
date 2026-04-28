@@ -15,6 +15,7 @@
     "format": "prettier --write \"src/**/*.{ts,js,json,css,html}\" \"src/*.{ts,js,json,css,html}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,json,css,html}\" \"src/*.{ts,js,json,css,html}\"",
     "puzzle:generate": "node scripts/generate-puzzle.mjs",
+    "puzzle:regenerate": "node scripts/regenerate-all-puzzles.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
