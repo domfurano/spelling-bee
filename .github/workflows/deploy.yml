@@ -21,6 +21,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -36,16 +38,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Set repository topics
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh repo edit ${{ github.repository }} \
-            --add-topic game \
-            --add-topic typescript \
-            --add-topic spelling-bee \
-            --add-topic nyt-clone
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
